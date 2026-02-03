@@ -1,0 +1,30 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Basic read/write access helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    // Allow read access to all profile pictures
+    match /profilePictures/{userId}/{allImages=**} {
+      allow read;
+      allow write: if isOwner(userId);
+    }
+    
+    // Allow access to user's own meal images
+    match /mealImages/{userId}/{allImages=**} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId);
+    }
+    
+    // Default deny
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+} 
