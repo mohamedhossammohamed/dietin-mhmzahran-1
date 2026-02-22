@@ -6,7 +6,7 @@ Phase 4: API Contract & Orchestration
 """
 
 import asyncio
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import torch
 from pydantic import BaseModel
@@ -73,7 +73,7 @@ class AnalysisResponse(BaseModel):
 
 async def mock_gpt4o_classification(image_bytes: bytes):
     await asyncio.sleep(1) # simulate network latency
-    return {"foodName": "Fried Chicken", "prep": "fried", "is_liquid": False}
+    return {"foodName": "Chicken", "prep": "fried", "is_liquid": False}
 
 @app.post("/api/v1/analyze/image", response_model=AnalysisResponse)
 async def analyze_image(
@@ -82,16 +82,35 @@ async def analyze_image(
     context_image: UploadFile = File(None),
     crops: list[UploadFile] = File(None)
 ):
-    # Depending on how the frontend sends it, it might be `file` or `full_image`.
     upload_file = file if file else full_image
-    image_bytes = await upload_file.read()
     
-    # Run vision model and mock GPT concurrently
-    vision_task = asyncio.to_thread(vision_pipeline.estimate_volume, image_bytes)
-    gpt_task = mock_gpt4o_classification(image_bytes)
-    
-    volume_cm3, gpt_result = await asyncio.gather(vision_task, gpt_task)
-    
+    if not upload_file and not (context_image and crops):
+        raise HTTPException(status_code=400, detail="No valid image or crops provided")
+
+    masks = None
+    if upload_file:
+        image_bytes = await upload_file.read()
+        if not image_bytes:
+            raise HTTPException(status_code=400, detail="Empty file uploaded")
+            
+        # MODE 1 (Current): Backend runs MobileSAM
+        masks = vision_pipeline.run_mobile_sam(image_bytes)
+        
+        try:
+            # Run vision model and mock GPT concurrently
+            vision_task = asyncio.to_thread(vision_pipeline.estimate_volume, image_bytes)
+            gpt_task = mock_gpt4o_classification(image_bytes)
+            volume_cm3, gpt_result = await asyncio.gather(vision_task, gpt_task)
+        except Exception as e:
+            # Catch PIL errors or other model failures gracefully
+            raise HTTPException(status_code=400, detail=f"Image processing failed: {str(e)}")
+            
+    elif context_image and crops:
+        # MODE 2 (Future): Phone ran MobileSAM, backend skips segmentation
+        masks = crops
+        volume_cm3 = 250.0  # Simulated volume for pre-cropped inputs
+        gpt_result = await mock_gpt4o_classification(b"")
+
     # Query database
     db_record = search_engine.search(query=gpt_result["foodName"], prep_filter=gpt_result.get("prep", ""))
     
