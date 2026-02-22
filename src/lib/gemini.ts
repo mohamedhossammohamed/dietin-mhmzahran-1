@@ -5,7 +5,91 @@ import { useUserStore } from "@/stores/userStore";
 import { auth, db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 
-export const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GOOGLE_AI_KEY);
+const originalGenAI = new GoogleGenerativeAI(import.meta.env.VITE_GOOGLE_AI_KEY);
+
+export const genAI = {
+  getGenerativeModel: (options: any) => {
+    const originalModel = originalGenAI.getGenerativeModel(options);
+
+    return {
+      ...originalModel,
+      generateContent: async (request: any) => {
+        // Check if there is an inlineData (image) in the request
+        let hasImage = false;
+        let base64Data = null;
+        let mimeType = null;
+
+        if (request && request.contents && request.contents[0] && request.contents[0].parts) {
+          const inlineDataPart = request.contents[0].parts.find((p: any) => p.inlineData);
+          if (inlineDataPart) {
+            hasImage = true;
+            base64Data = inlineDataPart.inlineData.data;
+            mimeType = inlineDataPart.inlineData.mimeType;
+          }
+        }
+
+        if (hasImage) {
+          // Intercept! Route to local FastAPI instance
+          const byteCharacters = atob(base64Data);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: mimeType || "image/jpeg" });
+          const file = new File([blob], "image.jpg", { type: mimeType || "image/jpeg" });
+
+          const formData = new FormData();
+          formData.append("file", file);
+
+          // MHMZ: Rerouted Gemini call to local FastAPI middleware to ensure deterministic math
+          const response = await fetch("http://localhost:8000/api/v1/analyze/image", {
+            method: "POST",
+            body: formData
+          });
+
+          if (!response.ok) throw new Error("Backend analysis failed.");
+          const data = await response.json();
+
+          // Extract data from AnalysisResponse format
+          const backendData = data.data;
+
+          // Return fake Gemini-like response parsing what MealAnalysis.tsx actually expects
+          const fakeGeminiResponseText = JSON.stringify({
+            isFood: true,
+            title: backendData.foodName || "Analyzed Food",
+            calories: backendData.calories || 0,
+            protein: backendData.macros?.protein || 0,
+            carbs: backendData.macros?.carbs || 0,
+            fat: backendData.macros?.fat || 0,
+            cholesterol: 0,
+            magnesium: 0,
+            sugar: 0,
+            fiber: 0,
+            sodium: 0,
+            potassium: 0,
+            vitaminA: 0,
+            vitaminC: 0,
+            calcium: 0,
+            iron: 0,
+            score: backendData.healthScore || 85,
+            suggestions: backendData.warnings || [],
+            ingredients: ["Detected by DIETIN Backend Vision Engine"]
+          });
+
+          return {
+            response: {
+              text: () => fakeGeminiResponseText
+            }
+          };
+        }
+
+        // Return original if not an image
+        return originalModel.generateContent(request);
+      }
+    };
+  }
+};
 
 interface NutritionAnalysis {
   calories: number;
@@ -225,7 +309,7 @@ export async function analyzeUserProfile(profile: UserProfile): Promise<Analysis
   };
 }
 
-export async function analyzeImage(file: File): Promise<{ description: string }> {
+export async function analyzeImage(file: File): Promise<any> {
   const { dailyImageAnalysis, incrementImageAnalysis } = useUserStore.getState();
 
   // Get real-time pro status from Firestore
@@ -253,75 +337,21 @@ export async function analyzeImage(file: File): Promise<{ description: string }>
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const formData = new FormData();
+    formData.append("file", file);
 
-    // Convert File to base64
-    const base64 = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
+    // MHMZ: Rerouted Gemini call to local FastAPI middleware to ensure deterministic math
+    const response = await fetch("http://localhost:8000/api/v1/analyze/image", {
+      method: "POST",
+      body: formData
     });
 
-    // First validate if it's a food image
-    const validationPrompt = `Is this an image of food or a meal? Answer only with "yes" or "no".`;
-
-    const validationResult = await model.generateContent({
-      contents: [{
-        role: "user",
-        parts: [
-          { text: validationPrompt },
-          { inlineData: { data: base64.split(',')[1], mimeType: file.type } }
-        ]
-      }]
-    });
-
-    const validationResponse = await validationResult.response;
-    const isFood = validationResponse.text().toLowerCase().includes('yes');
-
-    if (!isFood) {
-      throw new Error("Please upload an image of food.");
+    if (!response.ok) {
+      throw new Error("Backend analysis failed.");
     }
 
-    // If it's food, analyze the contents
-    const analysisPrompt = `Describe the food/drink in this image with precise details.ONLY IF IT IS CONSUMABLE ITEM Include:
-1. Each distinct item/component
-BE SUPER FUCKING DETAILED AND SPECIFIC AS POSSIBLE AND DONT INCLUDE USELESS WORDS OR EXPRESSIONS LIKE 'THE PLATE SHOWS' ONLHY THE CONMTENT AS BULLETS
-2. Exact or estimated portion sizes (in oz, grams, or standard measures)
-3. Preparation methods (if visible)
-4. Any visible sauces, seasonings, or toppings
-5. Arrangement on the plate
-6. Don't include any italics, bolds, commas, fullstops, or any other formatting keep it simple and clear in lines include all the details.
-7. DONT INCLUDE ANYTHING ELSE LIKE THE 'THE PLATE CONTINAINS' NO ONLY THE INGREDEIENTS AS BULLETS NO EXTRA WORDS OR PHRASES BRIEF ANSER IN YOUR ANSWER LIEK DONT INCLUDE TITLE LIKE ' OH I GOT IT' THEN THE ANSWER NO ONLY THE ANSWER
-THICH IS AS BULLETS IN LIKE
-YOUR ANSWER IS LIKE TO BE FOR EXMAPLE:
-- 100g of chicken
-- 100g of rice
-- 100g of vegetables
-- 100g of sauce
-- 100g of cheese
-- 100g of bread
-THIS IS AN EXMAPLE AND REFERENCE FOR YOU TO FOLLOW AND NOTHING ELSE
-
-Format as a clear, detailed description focused ONLY on the food content.`;
-
-    const result = await model.generateContent({
-      contents: [{
-        role: "user",
-        parts: [
-          { text: analysisPrompt },
-          { inlineData: { data: base64.split(',')[1], mimeType: file.type } }
-        ]
-      }]
-    });
-
-    const response = await result.response;
-    const description = response.text()
-      .trim()
-      .replace(/^(The image shows|I see|This is|In this image)/i, '')
-      .trim();
-
-    return { description };
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error('Image analysis failed:', error);
     throw error;
