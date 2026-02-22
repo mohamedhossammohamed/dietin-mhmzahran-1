@@ -34,3 +34,12 @@ A comprehensive stress test and code audit against the `DIETIN_V2_MASTER_PLAN.md
 
 **Status:** Phase 4 is completely aligned with the DIETIN Master Architecture, locally verified to be crash-safe, and fully executed.
 
+## Technical Audit Remediation (Post-Audit Fixes)
+
+Following a rigorous technical audit, several critical architectural and logical issues were officially remediated in `main.py`:
+
+1. **Synchronous Blocking Resolved:** The `search_engine.search()` method execution was wrapped in `asyncio.to_thread()`, moving the heavy ChromaDB lookup to a background thread and unblocking the FastAPI asynchronous event loop.
+2. **The Liquid Fork Implemented:** Logic was added to inspect `gpt_result.get("is_liquid")`. If `True`, the Vision Engine's depth math is correctly bypassed in favor of a 400.0 cm³ container heuristic. `confidenceScore` is reduced to 0.5, and a strict warning is appended to the response payload.
+3. **Mode 2 Hardcoding Eradicated:** The fixed volume assumption of `250.0 cm³` for Mode 2 (crops without full image) was removed. It now correctly sets volume to 0.0, reduces confidence to 0.0, and appends a `"Missing full frame depth: Cannot compute metric volume deterministically."` warning.
+
+**Updated Status:** Phase 4 is now fully compliant with the "Clinical-Grade" and deterministic math directives of the Master Plan.

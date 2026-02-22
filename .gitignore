@@ -22,6 +22,7 @@ dev-dist
 *.zip
 .env
 .env.*
+python_backend/.env
 
 # Large asset/download folders to ignore
 SanFranciscoFont-master/

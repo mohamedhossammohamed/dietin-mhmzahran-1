@@ -64,6 +64,16 @@ class HybridSearchEngine:
     def __init__(self):
         self.collection = seed_database()
         
+        # Pre-compute BM25 corpus initialization to prevent O(N) bottleneck in search loop
+        results = self.collection.get(include=["documents"])
+        if results and results["documents"]:
+            tokenized_corpus = [doc.lower().split(" ") for doc in results["documents"]]
+            self.bm25 = BM25Okapi(tokenized_corpus)
+            self.documents_list = results["documents"]
+        else:
+            self.bm25 = None
+            self.documents_list = []
+        
     def search(self, query: str, prep_filter: str = "") -> Optional[NutritionRecord]:
         # ── Guard: empty / None inputs ──
         if not query or not query.strip():
@@ -83,14 +93,25 @@ class HybridSearchEngine:
             return None
 
         candidates = results["metadatas"][0]
-        documents = results["documents"][0]
         distances = results["distances"][0]
+        retrieved_docs = results["documents"][0]
 
         # 2. Sparse (BM25) initialization
-        tokenized_corpus = [doc.lower().split(" ") for doc in documents]
-        bm25 = BM25Okapi(tokenized_corpus)
         query_tokens = (query + " " + prep_filter).lower().split(" ")
-        bm25_scores = bm25.get_scores(query_tokens)
+        
+        # Only compute BM25 scores for the specific candidates returned by dense search
+        # We find their indices in the pre-computed corpus
+        bm25_scores = []
+        if self.bm25:
+            all_scores = self.bm25.get_scores(query_tokens)
+            for doc in retrieved_docs:
+                try:
+                    idx = self.documents_list.index(doc)
+                    bm25_scores.append(all_scores[idx])
+                except ValueError:
+                    bm25_scores.append(0.0)
+        else:
+            bm25_scores = [0.0] * len(candidates)
 
         best_candidate = None
         best_score = float("-inf")

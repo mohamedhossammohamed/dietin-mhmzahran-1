@@ -116,16 +116,32 @@ class VisionPipeline:
         if not np.any(foreground_mask):
             return 0.0  # No object detected above the plate plane
 
-        # ── 5. Map disparity to physical height ──────────────────
-        #   Normalise foreground disparity to [0, 1], then scale to cm.
-        disparity_normalized = (
-            (depth_array - self.DISPARITY_THRESHOLD)
-            / (255.0 - self.DISPARITY_THRESHOLD)
-        )
-        disparity_normalized = np.clip(disparity_normalized, 0.0, 1.0)
-        estimated_heights_cm = disparity_normalized * self.MAX_HEIGHT_CM
+        # ── 5. Map disparity to physical height (Inverse Optical Depth) ──
+        # In a pinhole camera, depth Z is inversely proportional to disparity.
+        # Let's assume the background plate (disparity ≈ DISPARITY_THRESHOLD) is at Z_DISTANCE_CM = 30cm.
+        # Z_obj = C / (disparity + epsilon).
+        # We find C such that when disparity = DISPARITY_THRESHOLD, Z_obj = 30cm.
+        # C = 30.0 * DISPARITY_THRESHOLD
+        
+        # Only process foreground pixels
+        disparity_fg = depth_array[foreground_mask]
+        
+        # Avoid division by zero
+        disparity_fg = np.maximum(disparity_fg, 1.0)
+        
+        # Calculate real depth Z for each foreground pixel
+        C = self.Z_DISTANCE_CM * self.DISPARITY_THRESHOLD
+        Z_obj_cm = C / disparity_fg
+        
+        # Height of the food is the difference between the plate distance and object distance
+        # e.g., if plate is at 30cm and food top is at 25cm, height = 5cm.
+        estimated_heights_cm = self.Z_DISTANCE_CM - Z_obj_cm
+        
+        # Constrain heights to be positive and within MAX_HEIGHT_CM
+        estimated_heights_cm = np.clip(estimated_heights_cm, 0.0, self.MAX_HEIGHT_CM)
 
         # ── 6. Integrate volume: Σ (area × height) ──────────────
+        # Sum the volume of all foreground pixels
         volume_cm3 = float(np.sum(pixel_area_cm2 * estimated_heights_cm))
 
         return volume_cm3

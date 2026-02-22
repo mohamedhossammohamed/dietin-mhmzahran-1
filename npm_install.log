@@ -1,0 +1,324 @@
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'react-zxing@2.1.0',
+npm warn EBADENGINE   required: { node: '^18 || ^20 || ^22', yarn: '^1.22' },
+npm warn EBADENGINE   current: { node: 'v24.13.0', npm: '11.6.2' }
+npm warn EBADENGINE }
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+npm warn deprecated sourcemap-codec@1.4.8: Please use @jridgewell/sourcemap-codec instead
+npm warn deprecated scmp@2.1.0: Just use Node.js's crypto.timingSafeEqual()
+npm warn deprecated glob@9.3.5: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated har-validator@5.1.5: this library is no longer supported
+npm warn deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+npm warn deprecated w3c-hr-time@1.0.2: Use your platform's native performance.now() and performance.timeOrigin.
+npm warn deprecated domexception@2.0.1: Use your platform's native DOMException instead
+npm warn deprecated abab@2.0.6: Use your platform's native atob() and btoa() methods instead
+npm warn deprecated whatwg-encoding@1.0.5: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+npm warn deprecated @babel/plugin-proposal-object-rest-spread@7.20.7: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-object-rest-spread instead.
+npm warn deprecated core-js@2.6.12: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
+npm warn deprecated @babel/polyfill@7.12.1: 🚨 This package has been deprecated in favor of separate inclusion of a polyfill and regenerator-runtime (when needed). See the @babel/polyfill docs (https://babeljs.io/docs/en/babel-polyfill) for more information.
+npm warn deprecated three-mesh-bvh@0.7.8: Deprecated due to three.js version incompatibility. Please use v0.8.0, instead.
+npm warn deprecated tar@6.2.1: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated react-use-gesture@9.1.3: This package is no longer maintained. Please use @use-gesture/react instead
+npm warn deprecated react-native-vector-icons@10.3.0: react-native-vector-icons package has moved to a new model of per-icon-family packages. See the https://github.com/oblador/react-native-vector-icons/blob/master/MIGRATION.md on how to migrate
+npm warn deprecated source-map@0.8.0-beta.0: The work that was done in this beta branch won't be included in future versions
+npm warn deprecated glob@11.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+npm warn cleanup Failed to remove some directories [
+npm warn cleanup   [
+npm warn cleanup     '/Users/mohammedhossam/Desktop/dietin-mhmzahran-1/node_modules',
+npm warn cleanup     [Error: ENOTEMPTY: directory not empty, rmdir '/Users/mohammedhossam/Desktop/dietin-mhmzahran-1/node_modules'] {
+npm warn cleanup       errno: -66,
+npm warn cleanup       code: 'ENOTEMPTY',
+npm warn cleanup       syscall: 'rmdir',
+npm warn cleanup       path: '/Users/mohammedhossam/Desktop/dietin-mhmzahran-1/node_modules'
+npm warn cleanup     }
+npm warn cleanup   ]
+npm warn cleanup ]
+npm error code 1
+npm error path /Users/mohammedhossam/Desktop/dietin-mhmzahran-1/node_modules/isolated-vm
+npm error command failed
+npm error command sh -c prebuild-install || (node-gyp rebuild --release -j max && node-gyp clean)
+npm error CXX(target) Release/obj.target/nortti/src/external_copy/serializer_nortti.o
+npm error   CXX(target) Release/obj.target/nortti/src/isolate/allocator_nortti.o
+npm error (node:47952) [DEP0176] DeprecationWarning: fs.R_OK is deprecated, use fs.constants.R_OK instead
+npm error (Use `node --trace-deprecation ...` to show where the warning was created)
+npm error prebuild-install warn install No prebuilt binaries found (target=24.13.0 runtime=node arch=arm64 libc= platform=darwin)
+npm error gyp info it worked if it ends with ok
+npm error gyp info using node-gyp@11.4.2
+npm error gyp info using node@24.13.0 | darwin | arm64
+npm error gyp info find Python using Python version 3.9.6 found at "/Applications/Xcode.app/Contents/Developer/usr/bin/python3"
+npm error gyp info spawn /Applications/Xcode.app/Contents/Developer/usr/bin/python3
+npm error gyp info spawn args [
+npm error gyp info spawn args '/usr/local/lib/node_modules/npm/node_modules/node-gyp/gyp/gyp_main.py',
+npm error gyp info spawn args 'binding.gyp',
+npm error gyp info spawn args '-f',
+npm error gyp info spawn args 'make',
+npm error gyp info spawn args '-I',
+npm error gyp info spawn args '/Users/mohammedhossam/Desktop/dietin-mhmzahran-1/node_modules/isolated-vm/build/config.gypi',
+npm error gyp info spawn args '-I',
+npm error gyp info spawn args '/usr/local/lib/node_modules/npm/node_modules/node-gyp/addon.gypi',
+npm error gyp info spawn args '-I',
+npm error gyp info spawn args '/Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/common.gypi',
+npm error gyp info spawn args '-Dlibrary=shared_library',
+npm error gyp info spawn args '-Dvisibility=default',
+npm error gyp info spawn args '-Dnode_root_dir=/Users/mohammedhossam/Library/Caches/node-gyp/24.13.0',
+npm error gyp info spawn args '-Dnode_gyp_dir=/usr/local/lib/node_modules/npm/node_modules/node-gyp',
+npm error gyp info spawn args '-Dnode_lib_file=/Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/<(target_arch)/node.lib',
+npm error gyp info spawn args '-Dmodule_root_dir=/Users/mohammedhossam/Desktop/dietin-mhmzahran-1/node_modules/isolated-vm',
+npm error gyp info spawn args '-Dnode_engine=v8',
+npm error gyp info spawn args '--depth=.',
+npm error gyp info spawn args '--no-parallel',
+npm error gyp info spawn args '--generator-output',
+npm error gyp info spawn args 'build',
+npm error gyp info spawn args '-Goutput_dir=.'
+npm error gyp info spawn args ]
+npm error gyp info spawn make
+npm error gyp info spawn args [ 'BUILDTYPE=Release', '-C', 'build', '--jobs', 10 ]
+npm error In file included from ../src/external_copy/serializer_nortti.cc:1:
+npm error In file included from ../src/external_copy/serializer.h:2:
+npm error In file included from ../src/external_copy/external_copy.h:2:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8.h:23:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/cppgc/common.h:8:
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8config.h:13:2: error: "C++20 or later required."
+npm error    13 | #error "C++20 or later required."
+npm error       |  ^
+npm error In file included from ../src/isolate/allocator_nortti.cc:1:
+npm error In file included from ../src/isolate/allocator.h:2:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8.h:23:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/cppgc/common.h:8:
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8config.h:13:2: error: "C++20 or later required."
+npm error    13 | #error "C++20 or later required."
+npm error       |  ^
+npm error In file included from ../src/external_copy/serializer_nortti.cc:1In file included from ../src/isolate/allocator_nortti.cc:1:
+npm error In file included from ../src/isolate/allocator.h:2:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8.h:24:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-array-buffer.h:12:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:13:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-handle-base.h:8:
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-internal.h:1256:37: error: a non-type template parameter cannot have type 'ExternalPointerTagRange' (aka 'TagRange<ExternalPointerTag>') before C++20
+npm error  1256 |   template <ExternalPointerTagRange tag_range>
+npm error       |                                     ^
+npm error :
+npm error In file included from ../src/external_copy/serializer.h:2:
+npm error In file included from ../src/external_copy/external_copy.h:2:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8.h:24:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-array-buffer.h:12:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:13:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-handle-base.h:8:
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-internal.h:1256:37: error: a non-type template parameter cannot have type 'ExternalPointerTagRange' (aka 'TagRange<ExternalPointerTag>') before C++20
+npm error  1256 |   template <ExternalPointerTagRange tag_range>
+npm error       |                                     ^
+npm error In file included from ../src/isolate/allocator_nortti.cc:1:
+npm error In file included from ../src/isolate/allocator.h:2:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8.h:24:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-array-buffer.h:12:
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:280:5: error: unknown type name 'requires'
+npm error   280 |     requires std::is_base_of_v<T, S>
+npm error       |     ^
+npm error In file included from ../src/external_copy/serializer_nortti.cc:1:
+npm error In file included from ../src/external_copy/serializer.h:2:
+npm error In file included from ../src/external_copy/external_copy.h:2:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8.h:24:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-array-buffer.h:12:
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:280:5: error: unknown type name 'requires'
+npm error   280 |     requires std::is_base_of_v<T, S>
+npm error       |     ^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:280:19: error: non-friend class member 'is_base_of_v' cannot have a qualified name
+npm error   280 |     requires std::is_base_of_v<T, S>
+npm error       |              ~~~~~^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:280:19: error: member 'is_base_of_v' declared as a template
+npm error   279 |   template <class S>
+npm error       |   ~~~~~~~~~~~~~~~~~~
+npm error   280 |     requires std::is_base_of_v<T, S>
+npm error       |                   ^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:280:19: error: variable template partial specialization of 'is_base_of_v' not in a namespace enclosing '__1'
+npm error /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_base_of.h:27:50: note: explicitly specialized declaration is here
+npm error    27 | _LIBCPP/Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:280:19: error: non-friend class member 'is_base_of_v' cannot have a qualified name
+npm error   280 |     requires std::is_base_of_v<T, S>
+npm error       |              ~~~~~^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:280:19: error: member 'is_base_of_v' declared as a template
+npm error   279 |   template <class S>
+npm error       |   ~~~~~~~~~~~~~~~~~~
+npm error   280 |     requires std::is_base_of_v<T, S>
+npm error       |                   ^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:280:19: error: variable template partial specialization of 'is_base_of_v' not in a namespace enclosing '__1'
+npm error /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_base_of.h:27:50: note: explicitly specialized declaration is here
+npm error    27 | _LIBCPP_NO_SPECIALIZATIONS inline constexpr bool is_base_of_v = __is_base_of(_Bp, _Dp);
+npm error       |                                                  ^
+npm error _NO_SPECIALIZATIONS inline constexpr bool is_base_of_v = __is_base_of(_Bp, _Dp);
+npm error       |                                                  ^
+npm error In file included from ../src/isolate/allocator_nortti.cc:1:
+npm error In file included from ../src/external_copy/serializer_nortti.cc:1:
+npm error In file included from ../src/external_copy/serializer.h:2:
+npm error In file included from ../src/external_copy/external_copy.h:2:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8.h:24:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-array-buffer.h:12:
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:280:37: error: expected ';' at end of declaration list
+npm error   280 |     requires std::is_base_of_v<T, S>
+npm error       |                                     ^
+npm error       |                                     ;
+npm error In file included from ../src/isolate/allocator.h:2:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8.h:24:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-array-buffer.h:12:
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:280:37: error: expected ';' at end of declaration list
+npm error   280 |     requires std::is_base_of_v<T, S>
+npm error       |                                     ^
+npm error       |                                     ;
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:645:5: error: unknown type name 'requires'
+npm error   645 |     requires std::is_base_of_v<T, S>
+npm error       |     ^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:645:19: error: non-friend class member 'is_base_of_v' cannot have a qualified name
+npm error   645 |     requires std::is_base_of_v<T, S>
+npm error       |              ~~~~~^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:645:19: error: member 'is_base_of_v' declared as a template
+npm error   644 |   template <class S>
+npm error       |   ~~~~~~~~~~~~~~~~~~
+npm error   645 |     requires std::is_base_of_v<T, S>
+npm error       |                   ^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:645:19: error: variable template partial specialization of 'is_base_of_v' not in a namespace enclosing '__1'
+npm error /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_base_of.h:27:50: note: explicitly specialized declaration is here
+npm error    27 | _LIBCPP_NO_SPECIALIZATIONS inline constexpr bool is_base_of_v = __is_base_of(_Bp, _Dp);
+npm error       |                                                  ^
+npm error In file included from ../src/external_copy/serializer_nortti.cc:1:
+npm error In file included from ../src/external_copy/serializer.h:2:
+npm error In file included from ../src/external_copy/external_copy.h:2:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8.h:24:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-array-buffer.h:12:
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:645:37: error: expected ';' at end of declaration list
+npm error   645 |     requires std::is_base_of_v<T, S>
+npm error       |                                     ^
+npm error       |                                     ;
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:645:5: error: unknown type name 'requires'
+npm error   645 |     requires std::is_base_of_v<T, S>
+npm error       |     ^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:645:19: error: non-friend class member 'is_base_of_v' cannot have a qualified name
+npm error   645 |     requires std::is_base_of_v<T, S>
+npm error       |              ~~~~~^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:645:19: error: member 'is_base_of_v' declared as a template
+npm error   644 |   template <class S>
+npm error       |   ~~~~~~~~~~~~~~~~~~
+npm error   645 |     requires std::is_base_of_v<T, S>
+npm error       |                   ^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:645:19: error: variable template partial specialization of 'is_base_of_v' not in a namespace enclosing '__1'
+npm error /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_base_of.h:27:50: note: explicitly specialized declaration is here
+npm error    27 | _LIBCPP_NO_SPECIALIZATIONS inline constexpr bool is_base_of_v = __is_base_of(_Bp, _Dp);
+npm error       |                                                  ^
+npm error In file included from ../src/isolate/allocator_nortti.cc:1:
+npm error In file included from ../src/isolate/allocator.h:2:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8.h:24:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-array-buffer.h:12:
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-local-handle.h:645:37: error: expected ';' at end of declaration list
+npm error   645 |     requires std::is_base_of_v<T, S>
+npm error       |                                     ^
+npm error       |                                     ;
+npm error In file included from ../src/external_copy/serializer_nortti.cc:1:
+npm error In file included from ../src/external_copy/serializer.h:2:
+npm error In file included from ../src/external_copy/external_copy.h:2:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8.h:24:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-array-buffer.h:13:
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-memory-span.h:45:28: error: no member named 'ranges' in namespace 'std'
+npm error    45 | inline constexpr bool std::ranges::enable_view<v8::MemorySpan<T>> = true;
+npm error       |                       ~~~~~^
+npm error In file included from ../src/isolate/allocator_nortti.cc:1:
+npm error In file included from ../src/isolate/allocator.h:2:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8.h:24:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-array-buffer.h:13:
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-memory-span.h:45:28: error: no member named 'ranges' in namespace 'std'
+npm error    45 | inline constexpr bool std::ranges::enable_view<v8::MemorySpan<T>> = true;
+npm error       |                       ~~~~~^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-memory-span.h:47:28: error: no member named 'ranges' in namespace 'std'
+npm error    47 | inline constexpr bool std::ranges::enable_borrowed_range<v8::MemorySpan<T>> =
+npm error       |                       ~~~~~^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-memory-span.h:47:28: error: no member named 'ranges' in namespace 'std'
+npm error    47 | inline constexpr bool std::ranges::enable_borrowed_range<v8::MemorySpan<T>> =
+npm error       |                       ~~~~~^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-memory-span.h:168:35: error: no type named 'contiguous_iterator_tag' in namespace 'std'; did you mean 'output_iterator_tag'?
+npm error   168 |     using iterator_concept = std::contiguous_iterator_tag;
+npm error       |                              ~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+npm error       |                                   output_iterator_tag
+npm error /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__iterator/iterator_traits.h:70:29: note: 'output_iterator_tag' declared here
+npm error    70 | struct _LIBCPP_TEMPLATE_VIS output_iterator_tag {};
+npm error       |                             ^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-memory-span.h:168:35: error: no type named 'contiguous_iterator_tag' in namespace 'std'; did you mean 'output_iterator_tag'?
+npm error   168 |     using iterator_concept = std::contiguous_iterator_tag;
+npm error       |                              ~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+npm error       |                                   output_iterator_tag
+npm error /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__iterator/iterator_traits.h:70:29: note: 'output_iterator_tag' declared here
+npm error    70 | struct _LIBCPP_TEMPLATE_VIS output_iterator_tag {};
+npm error       |                             ^
+npm error In file included from ../src/external_copy/serializer_nortti.cc:1:
+npm error In file included from ../src/external_copy/serializer.h:2:
+npm error In file included from ../src/external_copy/external_copy.h:2:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8.h:24:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-array-buffer.h:14:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-object.h:10:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-maybe.h:11:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/cppgc/internal/conditional-stack-allocated.h:10:
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/cppgc/macros.h:51:1: error: unknown type name 'concept'
+npm error    51 | concept IsStackAllocatedType =
+npm error       | ^
+npm error In file included from ../src/isolate/allocator_nortti.cc:1:
+npm error In file included from ../src/isolate/allocator.h:2:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8.h:24:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-array-buffer.h:14:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-object.h:10:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-maybe.h:11:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/cppgc/internal/conditional-stack-allocated.h:10:
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/cppgc/macros.h:51:1: error: unknown type name 'concept'
+npm error    51 | concept IsStackAllocatedType =
+npm error       | ^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/cppgc/macros.h:52:5: error: use of undeclared identifier 'requires'
+npm error    52 |     requires { typename T::IsStackAllocatedTypeMarker; };
+npm error       |     ^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/cppgc/macros.h:52:13: error: expected ';' after top level declarator
+npm error    52 |     requires { typename T::IsStackAllocatedTypeMarker; };
+npm error       |             ^
+npm error       |             ;
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/cppgc/macros.h:52:5: error: use of undeclared identifier 'requires'
+npm error    52 |     requires { typename T::IsStackAllocatedTypeMarker; };
+npm error       |     ^
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/cppgc/macros.h:52:13: error: expected ';' after top level declarator
+npm error    52 |     requires { typename T::IsStackAllocatedTypeMarker; };
+npm error       |             ^
+npm error       |             ;
+npm error In file included from ../src/isolate/allocator_nortti.cc:1:
+npm error In file included from ../src/isolate/allocator.h:2:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8.h:24:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-array-buffer.h:14:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-object.h:10:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-maybe.h:11:
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/cppgc/internal/conditional-stack-allocated.h:22:1: error: unknown type name 'concept'
+npm error    22 | concept RequiresStackAllocated =
+npm error       | ^
+npm error In file included from ../src/external_copy/serializer_nortti.cc:1:
+npm error In file included from ../src/external_copy/serializer.h:2:
+npm error In file included from ../src/external_copy/external_copy.h:2:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8.h:24:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-array-buffer.h:14:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-object.h:10:
+npm error In file included from /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/v8-maybe.h:11:
+npm error /Users/mohammedhossam/Library/Caches/node-gyp/24.13.0/include/node/cppgc/internal/conditional-stack-allocated.h:22:1: error: unknown type name 'concept'
+npm error    22 | concept RequiresStackAllocated =
+npm error       | ^
+npm error fatal error: too many errors emitted, stopping now [-ferror-limit=]
+npm error fatal error: too many errors emitted, stopping now [-ferror-limit=]
+npm error 20 errors generated.
+npm error 20 errors generated.
+npm error make: *** [Release/obj.target/nortti/src/isolate/allocator_nortti.o] Error 1
+npm error make: *** Waiting for unfinished jobs....
+npm error make: *** [Release/obj.target/nortti/src/external_copy/serializer_nortti.o] Error 1
+npm error gyp ERR! build error 
+npm error gyp ERR! stack Error: `make` failed with exit code: 2
+npm error gyp ERR! stack at ChildProcess.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/node-gyp/lib/build.js:219:23)
+npm error gyp ERR! System Darwin 25.2.0
+npm error gyp ERR! command "/usr/local/bin/node" "/usr/local/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js" "rebuild" "--release" "-j" "max"
+npm error gyp ERR! cwd /Users/mohammedhossam/Desktop/dietin-mhmzahran-1/node_modules/isolated-vm
+npm error gyp ERR! node -v v24.13.0
+npm error gyp ERR! node-gyp -v v11.4.2
+npm error gyp ERR! not ok
+npm error A complete log of this run can be found in: /Users/mohammedhossam/.npm/_logs/2026-02-22T15_01_19_466Z-debug-0.log

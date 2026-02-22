@@ -16,3 +16,8 @@ pillow
 # ── Testing ──
 pytest
 httpx
+
+# ── Phase 5: Multi-modal Endpoints ──
+google-generativeai
+openai-whisper
+python-dotenv

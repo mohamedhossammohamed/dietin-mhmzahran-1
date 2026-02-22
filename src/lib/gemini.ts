@@ -40,23 +40,27 @@ export const genAI = {
           const file = new File([blob], "image.jpg", { type: mimeType || "image/jpeg" });
 
           const formData = new FormData();
-          formData.append("file", file);
+          formData.append("full_image", file);
 
-          // MHMZ: Rerouted Gemini call to local FastAPI middleware to ensure deterministic math
+          // MHMZ: Rerouted AI call to local FastAPI middleware for deterministic math and secure API gateway.
           const response = await fetch("http://localhost:8000/api/v1/analyze/image", {
             method: "POST",
             body: formData
           });
 
           if (!response.ok) throw new Error("Backend analysis failed.");
-          const data = await response.json();
+          const responseData = await response.json();
+
+          if (responseData && responseData.data && responseData.data.warnings) {
+            console.warn("Backend Warnings:", responseData.data.warnings);
+          }
 
           // Extract data from AnalysisResponse format
-          const backendData = data.data;
+          const backendData = responseData.data;
 
           // Return fake Gemini-like response parsing what MealAnalysis.tsx actually expects
           const fakeGeminiResponseText = JSON.stringify({
-            isFood: true,
+            isFood: responseData.success ?? true,
             title: backendData.foodName || "Analyzed Food",
             calories: backendData.calories || 0,
             protein: backendData.macros?.protein || 0,
@@ -72,7 +76,7 @@ export const genAI = {
             vitaminC: 0,
             calcium: 0,
             iron: 0,
-            score: backendData.healthScore || 85,
+            score: backendData.confidenceScore != null ? Math.round(backendData.confidenceScore * 100) : 85,
             suggestions: backendData.warnings || [],
             ingredients: ["Detected by DIETIN Backend Vision Engine"]
           });
@@ -338,9 +342,9 @@ export async function analyzeImage(file: File): Promise<any> {
 
   try {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("full_image", file);
 
-    // MHMZ: Rerouted Gemini call to local FastAPI middleware to ensure deterministic math
+    // MHMZ: Rerouted AI call to local FastAPI middleware for deterministic math and secure API gateway.
     const response = await fetch("http://localhost:8000/api/v1/analyze/image", {
       method: "POST",
       body: formData
@@ -351,6 +355,11 @@ export async function analyzeImage(file: File): Promise<any> {
     }
 
     const data = await response.json();
+
+    if (data && data.data && data.data.warnings) {
+      console.warn("Backend Warnings:", data.data.warnings);
+    }
+
     return data;
   } catch (error) {
     console.error('Image analysis failed:', error);
