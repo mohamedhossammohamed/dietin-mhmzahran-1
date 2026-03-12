@@ -46,3 +46,9 @@ The application follows a client-heavy architecture where most logic resides in 
 
 Data primarily flows from **User Actions** -> **Zustand Store** -> **Local Persistence** -> **Firestore Sync**.
 The app is designed to work offline-first, syncing data when a connection is available.
+
+For AI analysis, the application utilizes a hybrid approach:
+- **Text Queries:** Currently sent directly to Gemini from the client side (violating the secure gateway objective).
+- **Image Analysis (Phase 4):** Intercepted via a monkey-patch in `src/lib/gemini.ts` and sent to the local Python FastAPI middleware (`python_backend/main.py`) to execute deterministic math algorithms before fetching classification from the LLM.
+
+*Note: For a detailed examination of technical debt, bugs, and misalignments in this flow, please refer to [docs/critical_analysis.md](./critical_analysis.md).*
