@@ -4,7 +4,9 @@ The core business logic of Dietin is centralized in `src/lib/`, separating heavy
 
 ## AI Integration (`src/lib/gemini.ts`)
 
-Dietin leverages **Google's Gemini 2.0 Flash** model for intelligent features. This module handles all interactions with the Generative AI API.
+Dietin leverages **Google's Gemini 2.0 Flash** model for intelligent features. This module handles interactions with the Generative AI API, though the implementation currently suffers from architectural debt and security risks (exposing client-side API keys).
+
+*Note: See [docs/critical_analysis.md](./critical_analysis.md) for a comprehensive audit of the AI integration.*
 
 ### Key Functions
 
@@ -19,7 +21,7 @@ Dietin leverages **Google's Gemini 2.0 Flash** model for intelligent features. T
 
 - `analyzeImage(file: File)`:
     *   **Goal**: Identifies food items from an image and provides a description.
-    *   **Logic**: Converts image to Base64, validates it's food, then requests a detailed breakdown.
+    *   **Logic**: The `genAI` instance is monkey-patched. If it detects an image, it constructs a `FormData` object and posts it to the local Python FastAPI middleware (`http://localhost:8000/api/v1/analyze/image`). The Python backend computes the volume deterministically and fetches classification strings, returning a JSON that `gemini.ts` re-wraps to look like a standard Google Generative AI response.
 
 - `analyzeUserProfile(profile: UserProfile)`:
     *   **Note**: Currently delegates to deterministic calculations in `calculations.ts` rather than using AI, ensuring consistent and scientifically backed results for BMR/TDEE.
