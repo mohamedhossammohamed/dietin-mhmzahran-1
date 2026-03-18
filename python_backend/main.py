@@ -17,7 +17,7 @@ import google.generativeai as genai
 load_dotenv()
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 import torch
 from pydantic import BaseModel
 from PIL import UnidentifiedImageError
@@ -102,6 +102,13 @@ class AnalysisResponse(BaseModel):
     success: bool
     data: AnalysisData
 
+def clean_json(text: str) -> str:
+    """Removes markdown backticks from a JSON string."""
+    import re
+    if "```" in text:
+        text = re.sub(r'```(?:json)?\n?(.*?)\n?```', r'\1', text, flags=re.DOTALL).strip()
+    return text
+
 async def gemini_classification(image_bytes: bytes) -> dict:
     if not image_bytes:
         return {"foodName": "Unknown", "prep": "raw", "is_liquid": False}
@@ -131,7 +138,8 @@ async def gemini_classification(image_bytes: bytes) -> dict:
         
     try:
         response = await asyncio.to_thread(call_gemini)
-        return json.loads(response.text)
+        cleaned_text = clean_json(response.text)
+        return json.loads(cleaned_text)
     except Exception as e:
         print(f"Gemini Classification Error: {e}")
         return {"foodName": "Unknown", "prep": "raw", "is_liquid": False}
@@ -295,6 +303,26 @@ async def analyze_speech(file: UploadFile = File(...)):
         )
     )
 
+class ProxyGenerateRequest(BaseModel):
+    prompt: str
+    system_instruction: Optional[str] = None
+
+@app.post("/api/v1/proxy/generate")
+async def proxy_generate(req: ProxyGenerateRequest):
+    model_kwargs: Dict[str, Any] = {
+        "model_name": "gemini-2.0-flash",
+        "generation_config": {"response_mime_type": "application/json"}
+    }
+    if req.system_instruction:
+        model_kwargs["system_instruction"] = req.system_instruction
+
+    model = genai.GenerativeModel(**model_kwargs)
+    try:
+        response = await asyncio.to_thread(model.generate_content, req.prompt)
+        return {"text": response.text}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/api/v1/analyze/label", response_model=AnalysisResponse)
 async def analyze_label(file: UploadFile = File(...)):
     try:
@@ -324,7 +352,8 @@ async def analyze_label(file: UploadFile = File(...)):
             ])
             
         response = await asyncio.to_thread(call_gemini_label)
-        parsed_data = json.loads(response.text)
+        cleaned_text = clean_json(response.text)
+        parsed_data = json.loads(cleaned_text)
         
         food_name = parsed_data.get("foodName", "Nutrition Label")
         calories = int(parsed_data.get("calories", 0))
