@@ -24,6 +24,7 @@ from PIL import UnidentifiedImageError
 
 from vision_engine import VisionPipeline
 from nutrition_engine import HybridSearchEngine
+from liquid_logic import apply_liquid_fallback
 
 # ---------------------------------------------------------------------------
 # Phase 1: Core App & CORS
@@ -208,9 +209,8 @@ async def analyze_image(
         
         # Liquid Fork Logic
         if gpt_result.get("is_liquid"):
-            volume_cm3 = 0.0
-            confidence_score = 0.0
-            warnings.append("Liquid detected. Metric depth bypassed due to refraction. Volume cannot be safely estimated without container dimensions.")
+            volume_cm3, confidence_score = apply_liquid_fallback(volume_cm3, confidence_score)
+            warnings.append("Liquid detected. Depth was down-weighted and a conservative container-fill fallback was applied.")
             
         # (Confidence score is now zeroed globally for Mode 2 before returning)
 
