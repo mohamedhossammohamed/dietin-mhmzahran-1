@@ -18,8 +18,23 @@ export const genAI = {
         let hasImage = false;
         let base64Data = null;
         let mimeType = null;
+        let promptText = "";
 
-        if (request && request.contents && request.contents[0] && request.contents[0].parts) {
+        if (typeof request === "string") {
+            promptText = request;
+        } else if (Array.isArray(request)) {
+            promptText = request.find(item => typeof item === "string") || "";
+            const inlineDataPart = request.find((p: any) => p.inlineData);
+            if (inlineDataPart) {
+                hasImage = true;
+                base64Data = inlineDataPart.inlineData.data;
+                mimeType = inlineDataPart.inlineData.mimeType;
+            }
+        } else if (request && request.contents && request.contents[0] && request.contents[0].parts) {
+          const textPart = request.contents[0].parts.find((p: any) => p.text);
+          if (textPart) {
+              promptText = textPart.text;
+          }
           const inlineDataPart = request.contents[0].parts.find((p: any) => p.inlineData);
           if (inlineDataPart) {
             hasImage = true;
@@ -77,7 +92,7 @@ export const genAI = {
             calcium: 0,
             iron: 0,
             score: backendData.confidenceScore != null ? Math.round(backendData.confidenceScore * 100) : 85,
-            suggestions: backendData.warnings || [],
+            suggestions: backendData.warnings && backendData.warnings.length > 0 ? backendData.warnings : ["Analyzed successfully using Vision Engine."],
             ingredients: ["Detected by DIETIN Backend Vision Engine"]
           });
 
@@ -88,8 +103,33 @@ export const genAI = {
           };
         }
 
-        // Return original if not an image
-        return originalModel.generateContent(request);
+        // MHMZ: Intercept text analysis and route to FastAPI proxy
+        try {
+            const response = await fetch("http://localhost:8000/api/v1/proxy/generate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    prompt: promptText,
+                    system_instruction: options?.systemInstruction || null
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error("Backend text proxy failed.");
+            }
+
+            const data = await response.json();
+            return {
+                response: {
+                    text: () => data.text
+                }
+            };
+        } catch (error) {
+            console.error("Proxy error:", error);
+            return originalModel.generateContent(request);
+        }
       }
     };
   }
