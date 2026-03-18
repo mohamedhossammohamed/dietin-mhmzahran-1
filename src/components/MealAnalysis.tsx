@@ -93,6 +93,7 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
   const [isPhotoAnalyzing, setIsPhotoAnalyzing] = useState(false);
   const [showPhotoInput, setShowPhotoInput] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isTransitioningToSearchRef = useRef(false);
   const [isCalculating, setIsCalculating] = useState(false);
   const [analysisWarning, setAnalysisWarning] = useState<string | null>(null);
   const [newFood, setNewFood] = useState({
@@ -178,17 +179,18 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
   };
 
   const handleSearchClick = () => {
+    isTransitioningToSearchRef.current = true;
     onClose(); // Close MealAnalysis popup
+    resetForm();
     // Keep nav hidden during transition
     setTimeout(() => {
       setIsSearchOpen(true); // Open search popup
+      isTransitioningToSearchRef.current = false;
     }, 300);
   };
 
-  let isTransitioningToSearch = false;
-
   const handleClose = () => {
-    if (isTransitioningToSearch) return;
+    if (isTransitioningToSearchRef.current) return;
     onClose();
     // Always reset form when closing
     resetForm();
@@ -196,17 +198,9 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
     document.dispatchEvent(new CustomEvent('setNavHide', { detail: { isHidden: false } }));
   };
 
-  // Set flag before transitioning to search
   useEffect(() => {
-    const handleBeforeSearch = () => {
-      isTransitioningToSearch = true;
-      setTimeout(() => {
-        isTransitioningToSearch = false;
-      }, 500);
-    };
-
     return () => {
-      if (!isTransitioningToSearch) {
+      if (!isTransitioningToSearchRef.current) {
         document.dispatchEvent(new CustomEvent('setNavHide', { detail: { isHidden: false } }));
       }
     };
@@ -394,12 +388,6 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
         throw new Error('Quota reached');
       }
 
-      // Increment quota counter before analysis for non-pro users
-      if (!isPro) {
-        console.log('Incrementing meal analysis quota for free user');
-        incrementMealAnalysis();
-      }
-
       const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
       // Convert image to base64
@@ -498,6 +486,10 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
           }
 
           setPhotoAnalysisResult(analysis);
+          if (!isPro) {
+            console.log('Incrementing meal analysis quota for free user');
+            incrementMealAnalysis();
+          }
 
         } catch (error) {
           console.error('Failed to parse AI response:', error);
@@ -857,12 +849,17 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
     setShowPhotoInput(true);
   };
 
-  const isFormValid = mealTitle &&
-    calories &&
-    protein &&
-    carbs &&
-    fat &&
-    (selectedTag || customTag);
+  const hasValidMacros = [calories, protein, carbs, fat].every((value) => {
+    if (value === "") return false;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) && parsed >= 0;
+  });
+
+  const isFormValid = Boolean(
+    mealTitle.trim() &&
+    hasValidMacros &&
+    (selectedTag || customTag)
+  );
 
   const analyzeWithAI = async () => {
     setIsAnalyzing(true);
@@ -897,12 +894,6 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
         });
         window.dispatchEvent(event);
         throw new Error('Quota reached');
-      }
-
-      // Increment quota counter BEFORE starting analysis for non-pro users
-      if (!isPro) {
-        console.log('Incrementing meal analysis quota for free user');
-        incrementMealAnalysis();
       }
 
       const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -1006,6 +997,10 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
         }
 
         setAnalysisResult(analysisData);
+        if (!isPro) {
+          console.log('Incrementing meal analysis quota for free user');
+          incrementMealAnalysis();
+        }
       } catch (parseError) {
         console.error("Failed to parse AI response:", parseError);
         console.log("Raw response:", text);
@@ -2183,6 +2178,7 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
                           </label>
                           <input
                             type="number"
+                            min="0"
                             placeholder="0"
                             value={field.value}
                             onChange={(e) => field.setter(e.target.value)}
