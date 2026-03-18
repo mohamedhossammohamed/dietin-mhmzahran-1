@@ -7,6 +7,7 @@ and a battery of edge-case, concurrency, and data integrity scenarios.
 
 import concurrent.futures
 import pytest
+from unittest.mock import patch
 from nutrition_engine import (
     HybridSearchEngine,
     NutritionRecord,
@@ -247,3 +248,32 @@ class TestBM25Sanity:
         # "Fried Chicken fried" is at index 0 in MOCK_DATA
         best_idx = max(range(len(scores)), key=lambda i: scores[i])
         assert MOCK_DATA[best_idx]["name"] == "Fried Chicken"
+
+class TestNutritionMissingCoverage:
+    def test_search_none_query(self, engine):
+        assert engine.search(None, "fried") is None
+        
+    def test_search_not_in_dense(self, engine):
+        # Even if BM25 scores it, dense search returns no metadatas if we mock it out
+        with patch.object(engine.collection, "query", return_value={"metadatas": [[]], "documents": [[]], "distances": [[]]}):
+            assert engine.search("valid query", "fried") is None
+
+    def test_seed_database_returns_existing(self):
+        # We know it was seeded already, calling seed_database directly returns it
+        from nutrition_engine import seed_database
+        c = seed_database()
+        assert c.count() == 15
+        
+    def test_bm25_empty_init(self):
+        # Mock empty collection
+        from nutrition_engine import HybridSearchEngine
+        with patch("nutrition_engine.seed_database") as mock_seed:
+            mock_seed.return_value.get.return_value = {"documents": []}
+            mock_engine = HybridSearchEngine()
+            assert mock_engine.bm25 is None
+            
+            # Search should safely handle missing bm25
+            with patch.object(mock_engine.collection, "query", return_value={"metadatas": [[{"id": "1", "name": "Fake", "preparation": "raw", "density_g_cm3": 1.0, "yield_factor": 1.0}]], "documents": [["fake doc"]], "distances": [[0.5]]}):
+                res = mock_engine.search("fake query", "raw")
+                assert res is not None
+

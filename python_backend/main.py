@@ -7,6 +7,7 @@ Phase 4: API Contract & Orchestration
 
 import asyncio
 import os
+import re
 import tempfile
 import base64
 import json
@@ -104,7 +105,6 @@ class AnalysisResponse(BaseModel):
 
 def clean_json(text: str) -> str:
     """Removes markdown backticks from a JSON string."""
-    import re
     if "```" in text:
         text = re.sub(r'```(?:json)?\n?(.*?)\n?```', r'\1', text, flags=re.DOTALL).strip()
     return text
@@ -232,7 +232,8 @@ async def analyze_image(
         macros = Macros(protein=int(mass_g * 0.2), carbs=int(mass_g * 0.3), fat=int(mass_g * 0.1))
 
     if not upload_file and context_image and crops:
-        confidence_score = 0.0
+        if confidence_score > 0.0:
+            confidence_score = 0.0
 
     return AnalysisResponse(
         success=True,
@@ -254,7 +255,7 @@ async def analyze_speech(file: UploadFile = File(...)):
     try:
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
             audio_bytes = await file.read()
-            await asyncio.to_thread(temp_file.write, audio_bytes)
+            temp_file.write(audio_bytes)
             temp_file_path = temp_file.name
         
         # Run transcription in thread to avoid blocking main event loop
@@ -377,5 +378,7 @@ async def analyze_label(file: UploadFile = File(...)):
                 warnings=["Parsed directly from Nutrition Label OCR."]
             )
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Label OCR failed: {str(e)}")

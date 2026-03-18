@@ -12,6 +12,7 @@ Master Plan §Phase 3 Acceptance Criteria (line 116):
 
 import concurrent.futures
 import io
+from unittest.mock import patch
 import math
 
 import numpy as np
@@ -306,3 +307,28 @@ class TestModelLoading:
     def test_depth_estimator_callable(self, pipeline):
         """The pipeline object should be callable."""
         assert callable(pipeline.depth_estimator)
+
+class TestVisionMissingCoverage:
+    @patch("vision_engine.torch.cuda.device_count", return_value=1)
+    @patch("vision_engine.pipeline")
+    def test_initialize_cuda(self, mock_hf_pipeline, mock_dc, pipeline):
+        with patch("vision_engine.torch.backends.mps.is_available", return_value=False):
+            with patch("vision_engine.torch.cuda.is_available", return_value=True):
+                pipeline._initialize()
+                assert pipeline.device == "cuda"
+                
+    def test_initialize_cpu(self, pipeline):
+        with patch("vision_engine.torch.backends.mps.is_available", return_value=False):
+            with patch("vision_engine.torch.cuda.is_available", return_value=False):
+                pipeline._initialize()
+                assert pipeline.device == "cpu"
+
+    @patch("vision_engine.pipeline")
+    def test_disparity_division_by_zero(self, mock_hf_pipeline, pipeline):
+        # Force all disparity to 0 to test np.maximum clip
+        import numpy as np
+        mock_hf_pipeline.return_value = {"depth": Image.new("L", (224, 224), 0)}
+        pipeline.depth_estimator = mock_hf_pipeline
+        vol = pipeline.estimate_volume(_make_image_bytes(224, 224, "red"))
+        assert vol >= 0.0
+
