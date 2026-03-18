@@ -9,7 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { useTranslation } from 'react-i18next';
 import NavHide from '@/components/NavHide';
-import paymobLogo from '@/assets/image.png';
+// import paymobLogo from '@/assets/image.png';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { app } from '@/lib/firebase';
 
@@ -501,7 +501,7 @@ const Payment = () => {
                 onClick={handlePaymobPayment}
                 className="w-full bg-white border border-white text-transparent font-medium py-4 rounded-full transition-all duration-200 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)]"
               >
-                <img src={paymobLogo} alt="Paymob" className="h-5 w-auto" />
+                <span className="text-black font-sf-bold text-lg">Paymob</span>
               </button>
 
               <div className="text-center space-y-2">

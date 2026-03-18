@@ -321,6 +321,8 @@ async def proxy_generate(req: ProxyGenerateRequest):
         response = await asyncio.to_thread(model.generate_content, req.prompt)
         return {"text": response.text}
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/v1/analyze/label", response_model=AnalysisResponse)

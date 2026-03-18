@@ -48,3 +48,9 @@ yarn-error.log*
 *.swp
 *.swo
 .vs/
+
+# Virtual Environments
+venv/
+.venv/
+env/
+python_backend/venv/

@@ -78,10 +78,6 @@ export default defineConfig({
     port: 3000,
     host: true, // Allow external access
     allowedHosts: ['c3ca67c6a535.ngrok-free.app', '.ngrok-free.app'],
-    hmr: {
-      protocol: 'wss',
-      clientPort: 443
-    },
     fs: {
       strict: false,
       allow: ['..']
