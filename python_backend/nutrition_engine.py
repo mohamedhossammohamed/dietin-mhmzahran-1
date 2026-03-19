@@ -41,18 +41,26 @@ MOCK_FOOD_DATA = [
 class HybridSearchEngine:
     def __init__(self, db_path: str = "./chroma_db"):
         self.db_path = db_path
+        self._initialized = False
+
+    def _initialize(self):
+        if self._initialized:
+            return
         self.client = chromadb.PersistentClient(path=self.db_path)
         self.collection = self.client.get_or_create_collection(name="nutrition_data")
         # Load embedding model on CPU to ensure it works reliably across environments for DB seed/search
         self.embedding_model = SentenceTransformer("all-MiniLM-L6-v2", device="cpu")
         self.records = MOCK_FOOD_DATA
         self.corpus = [f"{r['name']} {r['preparation']}".lower() for r in self.records]
+        # Precompute O(1) reverse-lookup map for BM25 scoring
+        self.corpus_index_map = {text: idx for idx, text in enumerate(self.corpus)}
         tokenized_corpus = [doc.split(" ") for doc in self.corpus]
         self.bm25 = BM25Okapi(tokenized_corpus)
 
         # Check if we need to seed
         if self.collection.count() == 0:
             self.seed_database()
+        self._initialized = True
 
     def seed_database(self):
         print("Seeding database with mock nutrition data...")
@@ -75,6 +83,7 @@ class HybridSearchEngine:
         """
         Perform a hybrid search using dense vectors (Chroma) and sparse (BM25) penalty.
         """
+        self._initialize()
         # 1. Dense Vector Search (Top 10 candidates)
         query_embedding = self.embedding_model.encode([query]).tolist()[0]
         results = self.collection.query(
@@ -110,8 +119,8 @@ class HybridSearchEngine:
                 # (assuming ids map exactly or we search by name/prep)
                 # For simplicity, we search the corpus list to find the match index
                 cand_str = f"{candidate['name']} {candidate['preparation']}".lower()
-                try:
-                    corpus_idx = self.corpus.index(cand_str)
+                corpus_idx = self.corpus_index_map.get(cand_str)
+                if corpus_idx is not None:
                     bm25_score = bm25_scores[corpus_idx]
 
                     # If BM25 score is very low, penalize heavily.
@@ -120,7 +129,7 @@ class HybridSearchEngine:
                         sparse_modifier = -0.5  # Heavy penalty
                     else:
                         sparse_modifier = 0.1 * bm25_score # Small reward
-                except ValueError:
+                else:
                     sparse_modifier = -0.5 # Penalty if not found somehow
 
             final_score = dense_score + sparse_modifier

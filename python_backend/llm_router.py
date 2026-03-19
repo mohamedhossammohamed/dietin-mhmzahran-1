@@ -3,6 +3,10 @@ import json
 import httpx
 from typing import Dict, Any
 
+import re
+
+_OCR_EMPTY_RESULT: Dict[str, Any] = {"calories": 0, "protein": 0.0, "carbs": 0.0, "fat": 0.0}
+
 class LLMRouter:
     """
     Routes multimodal classification requests to the best available LLM provider
@@ -51,24 +55,135 @@ class LLMRouter:
     async def get_ocr(self, base64_image: str) -> Dict[str, Any]:
         """
         Extracts exact OCR table values for Nutrition Facts panels.
+        Sends the image to the configured LLM provider with a dedicated OCR prompt.
         """
-        if self.provider == "mock":
+        ocr_prompt = (
+            "This image shows a nutrition facts label. Extract ONLY the following fields "
+            "and return a JSON object with keys: 'calories' (integer), 'protein' (float in grams), "
+            "'carbs' (float in grams), 'fat' (float in grams). "
+            "Values should be per serving as shown on the label. Return ONLY the JSON object."
+        )
+
+        if self.provider == "gemini":
+            return await self._call_gemini_ocr(base64_image, ocr_prompt)
+        elif self.provider == "anthropic":
+            return await self._call_anthropic_ocr(base64_image, ocr_prompt)
+        elif self.provider == "openai":
+            return await self._call_openai_ocr(base64_image, ocr_prompt)
+        else:
+            # Mock fallback when no API keys are configured
             import asyncio
             await asyncio.sleep(0.5)
             return {
                 "calories": 250,
-                "protein": 15,
-                "carbs": 30,
-                "fat": 10
+                "protein": 15.0,
+                "carbs": 30.0,
+                "fat": 10.0
             }
-        # In a real implementation, we would construct a specific prompt for OCR.
-        # For simplicity in Phase 4/5 integration, we use a basic mock structure if the provider isn't fully wired for OCR yet.
-        return {
-            "calories": 250,
-            "protein": 15,
-            "carbs": 30,
-            "fat": 10
+
+    async def _call_gemini_ocr(self, base64_image: str, prompt: str) -> Dict[str, Any]:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={self.gemini_key}"
+        payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {"text": prompt},
+                        {
+                            "inline_data": {
+                                "mime_type": "image/jpeg",
+                                "data": base64_image
+                            }
+                        }
+                    ]
+                }
+            ],
+            "generationConfig": {
+                "responseMimeType": "application/json"
+            }
         }
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, json=payload, timeout=10.0)
+            if response.status_code == 200:
+                try:
+                    data = response.json()
+                    text = data["candidates"][0]["content"]["parts"][0]["text"]
+                    return json.loads(text)
+                except Exception as e:
+                    print(f"Gemini OCR parsing error: {e}")
+        return _OCR_EMPTY_RESULT
+
+    async def _call_anthropic_ocr(self, base64_image: str, prompt: str) -> Dict[str, Any]:
+        url = "https://api.anthropic.com/v1/messages"
+        headers = {
+            "x-api-key": self.anthropic_key,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json"
+        }
+        payload = {
+            "model": "claude-3-haiku-20240307",
+            "max_tokens": 300,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image",
+                            "source": {
+                                "type": "base64",
+                                "media_type": "image/jpeg",
+                                "data": base64_image
+                            }
+                        },
+                        {"type": "text", "text": prompt}
+                    ]
+                }
+            ]
+        }
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, headers=headers, json=payload, timeout=10.0)
+            if response.status_code == 200:
+                try:
+                    data = response.json()
+                    text = data["content"][0]["text"]
+                    # Strip markdown code fences if present
+                    text = re.sub(r"```(?:json)?", "", text).strip()
+                    return json.loads(text)
+                except Exception as e:
+                    print(f"Anthropic OCR parsing error: {e}")
+        return _OCR_EMPTY_RESULT
+
+    async def _call_openai_ocr(self, base64_image: str, prompt: str) -> Dict[str, Any]:
+        url = "https://api.openai.com/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {self.openai_key}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "model": "gpt-4o-mini",
+            "response_format": {"type": "json_object"},
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}
+                        }
+                    ]
+                }
+            ]
+        }
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, headers=headers, json=payload, timeout=10.0)
+            if response.status_code == 200:
+                try:
+                    data = response.json()
+                    text = data["choices"][0]["message"]["content"]
+                    return json.loads(text)
+                except Exception as e:
+                    print(f"OpenAI OCR parsing error: {e}")
+        return _OCR_EMPTY_RESULT
 
     async def _call_gemini(self, base64_image: str) -> Dict[str, Any]:
         # Minimal implementation for Gemini REST API (gemini-1.5-flash-latest or similar)

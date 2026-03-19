@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import os
+import shutil
 import torch
 
 app = FastAPI(title="DIETIN V2 Backend", version="1.0.0")
@@ -65,12 +67,12 @@ async def analyze_speech(audio_file: UploadFile = File(...)):
     """
     import whisper
     import tempfile
-    import os
 
-    # Check if ffmpeg is installed (required by whisper)
-    if os.system("ffmpeg -version > /dev/null 2>&1") != 0:
+    # Check if ffmpeg is installed (required by whisper) using a cross-platform check
+    if shutil.which("ffmpeg") is None:
         raise HTTPException(status_code=500, detail="FFmpeg is not installed on the host machine. Required for audio processing.")
 
+    tmp_path = None
     try:
         # Save uploaded file to a temporary location
         suffix = os.path.splitext(audio_file.filename)[1]
@@ -83,9 +85,6 @@ async def analyze_speech(audio_file: UploadFile = File(...)):
         model = whisper.load_model("tiny")
         result = model.transcribe(tmp_path)
         transcription = result["text"].strip()
-
-        # Cleanup temp file
-        os.remove(tmp_path)
 
         # Query nutrition engine directly using transcribed text
         # (Assuming the user just speaks the food name)
@@ -112,8 +111,13 @@ async def analyze_speech(audio_file: UploadFile = File(...)):
             }
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if tmp_path and os.path.exists(tmp_path):
+            os.remove(tmp_path)
 
 @app.post("/api/v1/analyze/label")
 async def analyze_label(label_image: UploadFile = File(...)):
@@ -269,10 +273,10 @@ async def analyze_image(
             final_fat = round(5.0 * multiplier, 1)
             resolved_food_name = food_name
 
-        # Confidence Gating
-        composite_score = class_confidence * 100.0
-        if composite_score < 70.0:
-            warnings.append(f"Low confidence ({composite_score:.1f}%): Values may be inaccurate.")
+        # Confidence Gating — keep score in 0–1 range to match frontend contract
+        composite_score = class_confidence
+        if composite_score < 0.7:
+            warnings.append(f"Low confidence ({composite_score * 100:.1f}%): Values may be inaccurate.")
 
         return AnalysisResponse(
             success=True,
@@ -285,3 +289,7 @@ async def analyze_image(
                 warnings=warnings
             )
         )
+
+    else:
+        # crops-only path is not yet implemented
+        raise HTTPException(status_code=400, detail="Crop-based analysis is not yet supported. Please provide a full_image.")
