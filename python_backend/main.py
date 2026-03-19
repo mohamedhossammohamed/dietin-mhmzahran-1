@@ -13,6 +13,8 @@ import base64
 import json
 import whisper
 from dotenv import load_dotenv
+# TODO(TechDebt): Update Python version to >=3.10 to clear google.auth and api_core FutureWarnings appearing in logs.
+# TODO(TechDebt): `google.generativeai` package is deprecated and will stop receiving updates. Migrate to the `google.genai` SDK.
 import google.generativeai as genai
 
 load_dotenv()

@@ -35,6 +35,7 @@ class VisionPipeline:
 
         # Load the HuggingFace depth-estimation pipeline with the
         # Depth-Anything-V2-Small checkpoint.
+        # TODO(TechDebt): Add `use_fast=True` keyword argument to the pipeline initialization to silence the slow image processor UserWarning.
         self.depth_estimator = pipeline(
             task="depth-estimation",
             model="depth-anything/Depth-Anything-V2-Small-hf",
