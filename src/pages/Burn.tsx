@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCw, Timer, Brain, Dumbbell, ChevronDown, ChevronUp, X, Pause, Play, Activity, Lock, Utensils, Droplet, Flame } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, extractJsonFromAI } from "@/lib/utils";
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from 'react-i18next';
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -300,7 +300,7 @@ export const Burn = () => {
     }
     
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
       
       const timestamp = Date.now();
       const randomSeed = Math.floor(Math.random() * 1000000);
@@ -356,8 +356,7 @@ export const Burn = () => {
       const result = await model.generateContent(prompt);
       const response = await result.response;
       const text = response.text();
-      
-      const cleanJson = text.replace(/```json\n|\n```|```/g, '').trim();
+      const cleanJson = extractJsonFromAI(text);
       const workoutData = JSON.parse(cleanJson);
       
       const processedWorkouts = workoutData.map((data: any) => {

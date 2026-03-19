@@ -693,7 +693,12 @@
       "quotaToast": "Daily meal analysis limit reached (3/3). Please subscribe to DietinPro for unlimited analysis or wait 24 hours.",
       "nutritionAnalyzeFailed": "Failed to analyze nutrition. Please try again or enter values manually.",
       "tryDetailedDescription": "Please try again with a more detailed description.",
-      "tryClearerPhoto": "Please try again with a clearer photo."
+      "tryClearerPhoto": "Please try again with a clearer photo.",
+      "formatError": "The AI response was not in the expected format.",
+      "analyzeMealFailed": "Analysis Error",
+      "genericError": "Failed to analyze the meal. Please try again.",
+      "improveFormatError": "Failed to improve the meal analysis. The AI response was not in the expected format.",
+      "improveGenericError": "Failed to improve the meal analysis. Please try again."
     }
   },
   "units": {

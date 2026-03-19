@@ -13,7 +13,16 @@ def test_analyze_label():
     image.save(img_byte_arr, format='JPEG')
     img_byte_arr = img_byte_arr.getvalue()
 
-    response = client.post(
+    from unittest.mock import patch, AsyncMock
+    with patch('main.llm_router.get_ocr', new_callable=AsyncMock) as mock_ocr:
+        mock_ocr.return_value = {
+            "calories": 250,
+            "protein": 15.0,
+            "carbs": 30.0,
+            "fat": 10.0
+        }
+        
+        response = client.post(
         "/api/v1/analyze/label",
         files={"label_image": ("label.jpg", img_byte_arr, "image/jpeg")}
     )

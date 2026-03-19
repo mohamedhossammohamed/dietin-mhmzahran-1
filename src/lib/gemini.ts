@@ -5,11 +5,17 @@ import { useUserStore } from "@/stores/userStore";
 import { auth, db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 
-const originalGenAI = new GoogleGenerativeAI(import.meta.env.VITE_GOOGLE_AI_KEY);
+const apiKey = import.meta.env.VITE_GOOGLE_AI_KEY || "";
+const originalGenAI = new GoogleGenerativeAI(apiKey);
 
 export const genAI = {
-  getGenerativeModel: (options: any) => {
-    const originalModel = originalGenAI.getGenerativeModel(options);
+  getGenerativeModel: (modelParams: any, requestOptions?: any) => {
+    if (!apiKey) {
+      console.error("DIETIN INIT ERROR: VITE_GOOGLE_AI_KEY is missing from environment variables.");
+    }
+
+    // MHMZ: Pass v1beta in requestOptions (2nd arg) for preview model support
+    const originalModel = (originalGenAI as any).getGenerativeModel(modelParams, { ...requestOptions, apiVersion: 'v1beta' });
 
     return {
       ...originalModel,
@@ -45,62 +51,78 @@ export const genAI = {
 
         if (hasImage) {
           // Intercept! Route to local FastAPI instance
-          const byteCharacters = atob(base64Data);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], { type: mimeType || "image/jpeg" });
-          const file = new File([blob], "image.jpg", { type: mimeType || "image/jpeg" });
-
-          const formData = new FormData();
-          formData.append("full_image", file);
-
-          // MHMZ: Rerouted AI call to local FastAPI middleware for deterministic math and secure API gateway.
-          const response = await fetch("http://localhost:8000/api/v1/analyze/image", {
-            method: "POST",
-            body: formData
-          });
-
-          if (!response.ok) throw new Error("Backend analysis failed.");
-          const responseData = await response.json();
-
-          if (responseData && responseData.data && responseData.data.warnings) {
-            console.warn("Backend Warnings:", responseData.data.warnings);
-          }
-
-          // Extract data from AnalysisResponse format
-          const backendData = responseData.data;
-
-          // Return fake Gemini-like response parsing what MealAnalysis.tsx actually expects
-          const fakeGeminiResponseText = JSON.stringify({
-            isFood: responseData.success ?? true,
-            title: backendData.foodName || "Analyzed Food",
-            calories: backendData.calories || 0,
-            protein: backendData.macros?.protein || 0,
-            carbs: backendData.macros?.carbs || 0,
-            fat: backendData.macros?.fat || 0,
-            cholesterol: 0,
-            magnesium: 0,
-            sugar: 0,
-            fiber: 0,
-            sodium: 0,
-            potassium: 0,
-            vitaminA: 0,
-            vitaminC: 0,
-            calcium: 0,
-            iron: 0,
-            score: backendData.confidenceScore != null ? Math.round(backendData.confidenceScore * 100) : 85,
-            suggestions: backendData.warnings && backendData.warnings.length > 0 ? backendData.warnings : ["Analyzed successfully using Vision Engine."],
-            ingredients: ["Detected by DIETIN Backend Vision Engine"]
-          });
-
-          return {
-            response: {
-              text: () => fakeGeminiResponseText
+          try {
+            const byteCharacters = atob(base64Data);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+              byteNumbers[i] = byteCharacters.charCodeAt(i);
             }
-          };
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: mimeType || "image/jpeg" });
+            const file = new File([blob], "image.jpg", { type: mimeType || "image/jpeg" });
+
+            const formData = new FormData();
+            formData.append("full_image", file);
+
+            // MHMZ: Rerouted AI call to local FastAPI middleware for deterministic math and secure API gateway.
+            const response = await fetch("http://localhost:8000/api/v1/analyze/image", {
+              method: "POST",
+              body: formData
+            });
+
+            if (!response.ok) {
+              const errorText = await response.text().catch(() => "Unknown error");
+              throw new Error(`Vision Proxy Error: ${response.status} - ${errorText}`);
+            }
+            const responseData = await response.json();
+
+            if (responseData && responseData.data && responseData.data.warnings) {
+              console.warn("Backend Warnings:", responseData.data.warnings);
+            }
+
+            // Extract data from AnalysisResponse format
+            const backendData = responseData.data;
+
+            // Return fake Gemini-like response parsing what MealAnalysis.tsx actually expects
+            const fakeGeminiResponseText = JSON.stringify({
+              isFood: responseData.success ?? true,
+              title: backendData.foodName || "Analyzed Food",
+              calories: backendData.calories || 0,
+              protein: backendData.macros?.protein || 0,
+              carbs: backendData.macros?.carbs || 0,
+              fat: backendData.macros?.fat || 0,
+              cholesterol: 0,
+              magnesium: 0,
+              sugar: 0,
+              fiber: 0,
+              sodium: 0,
+              potassium: 0,
+              vitaminA: 0,
+              vitaminC: 0,
+              calcium: 0,
+              iron: 0,
+              score: backendData.confidenceScore != null ? Math.round(backendData.confidenceScore * 100) : 85,
+              suggestions: backendData.warnings && backendData.warnings.length > 0 ? backendData.warnings : ["Analyzed successfully using Vision Engine."],
+              ingredients: ["Detected by DIETIN Backend Vision Engine"]
+            });
+
+            return {
+              response: {
+                text: () => fakeGeminiResponseText
+              }
+            };
+          } catch (error: any) {
+            console.error("========================================");
+            console.error("DIETIN VISION PROXY ERROR:", error.message);
+            console.error("========================================");
+            try {
+              console.log("Attempting native SDK fallback for vision...");
+              return await originalModel.generateContent(request);
+            } catch (fallbackError: any) {
+              console.error("DIETIN VISION FALLBACK SDK ERROR:", fallbackError.message);
+              throw new Error(`Vision Proxy: ${error.message} | Fallback SDK: ${fallbackError.message}`);
+            }
+          }
         }
 
         // MHMZ: Intercept text analysis and route to FastAPI proxy
@@ -112,12 +134,13 @@ export const genAI = {
                 },
                 body: JSON.stringify({
                     prompt: promptText,
-                    system_instruction: options?.systemInstruction || null
+                    system_instruction: modelParams?.systemInstruction || null
                 })
             });
 
             if (!response.ok) {
-                throw new Error("Backend text proxy failed.");
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.detail || `Backend proxy HTTP ${response.status}`);
             }
 
             const data = await response.json();
@@ -126,9 +149,17 @@ export const genAI = {
                     text: () => data.text
                 }
             };
-        } catch (error) {
-            console.error("Proxy error:", error);
-            return originalModel.generateContent(request);
+        } catch (error: any) {
+            console.error("========================================");
+            console.error("DIETIN PROXY ERROR:", error.message);
+            console.error("========================================");
+            try {
+                console.log("Attempting native SDK fallback...");
+                return await originalModel.generateContent(request);
+            } catch (fallbackError: any) {
+                console.error("DIETIN FALLBACK SDK ERROR:", fallbackError.message);
+                throw new Error(`Proxy: ${error.message} | Fallback SDK: ${fallbackError.message}`);
+            }
         }
       }
     };
@@ -225,7 +256,7 @@ export async function analyzeNutrition(foodDescription: string): Promise<Nutriti
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
 
     // Updated validation prompt to check for haram food and unrealistic amounts
     const validationPrompt = `Please validate if this user input is a food/drink/human consumable item.'
@@ -299,8 +330,9 @@ Return ONLY a JSON object in this exact format (no explanation, no other text):
     const response = await result.response;
     const text = response.text();
 
-    // Clean the response text
-    const cleanedText = text.replace(/```json\n?|\n?```/g, '').trim();
+    // MHMZ: Robust JSON extraction using regex to avoid conversational text failures
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    const cleanedText = jsonMatch ? jsonMatch[0] : text;
 
     try {
       const parsed = JSON.parse(cleanedText);
@@ -409,7 +441,7 @@ export async function analyzeImage(file: File): Promise<any> {
 
 export async function analyzeFood(description: string) {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
 
     const prompt = `Analyze this food: "${description}"`;
     const result = await model.generateContent(prompt);
@@ -417,16 +449,21 @@ export async function analyzeFood(description: string) {
     const text = response.text();
 
     try {
-      const parsed = JSON.parse(text);
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      const cleanedText = jsonMatch ? jsonMatch[0] : text;
+      const parsed = JSON.parse(cleanedText);
+      
+      // MHMZ: Adding defensive mapping for different response structures
+      const nutrition = parsed.nutrition || parsed;
       return {
-        calories: parsed.nutrition.calories,
-        protein: parsed.nutrition.protein,
-        carbs: parsed.nutrition.carbs,
-        fat: parsed.nutrition.fat,
-        healthScore: Math.round(parsed.healthScore)
+        calories: nutrition.calories || 0,
+        protein: nutrition.protein || 0,
+        carbs: nutrition.carbs || 0,
+        fat: nutrition.fat || 0,
+        healthScore: Math.round(parsed.healthScore || nutrition.healthScore || 85)
       };
     } catch (error) {
-      console.error("Failed to parse nutrition data:", error);
+      console.error("Failed to parse nutrition data [analyzeFood]:", error, "Raw:", text);
       return null;
     }
   } catch (error) {

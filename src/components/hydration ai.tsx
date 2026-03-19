@@ -68,7 +68,7 @@ import {
   Zap,
   Lock
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, extractJsonFromAI } from "@/lib/utils";
 import { motion, AnimatePresence, PanInfo, useMotionValue, useTransform } from "framer-motion";
 import { useHydrationStore, DrinkSuggestion } from "@/stores/hydrationStore";
 import NavHide from './NavHide';
@@ -598,7 +598,7 @@ const HydrationAI: React.FC<HydrationAIProps> = ({
         throw new Error('Maximum retry attempts reached');
       }
 
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
       
       const currentDrinkType = getDrinkType(new Date().getHours());
       const timestamp = Date.now();
@@ -633,7 +633,7 @@ const HydrationAI: React.FC<HydrationAIProps> = ({
       const text = response.text();
       
       // Clean up the response text to ensure valid JSON
-      const cleanJson = text.replace(/```json\n|\n```|```/g, '').trim();
+      const cleanJson = extractJsonFromAI(text);
       const newSuggestions = JSON.parse(cleanJson) as DrinkSuggestion[];
       
       // Validate the response structure
@@ -707,7 +707,7 @@ const HydrationAI: React.FC<HydrationAIProps> = ({
       updateLoadingStep('recipe', 0, 'loading');
       setGenerationProgress(10);
       
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
       
       const prompt = `Generate a detailed recipe for: "${drink.name}"
       
@@ -734,7 +734,7 @@ const HydrationAI: React.FC<HydrationAIProps> = ({
       setGenerationProgress(30);
       
       // Clean up the response text to ensure valid JSON
-      const cleanJson = text.replace(/```json\n|\n```|```/g, '').trim();
+      const cleanJson = extractJsonFromAI(text);
       const recipeData = JSON.parse(cleanJson);
       
       updateLoadingStep('recipe', 0, 'complete');

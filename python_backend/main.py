@@ -1,15 +1,51 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import shutil
 import torch
+import time
+from dotenv import load_dotenv
+# Load from root directory
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env"))
+# Also try local in case of different deployment
+load_dotenv()
+from logger import logger
 
 app = FastAPI(title="DIETIN V2 Backend", version="1.0.0")
+
+# Request/Response Logging Middleware
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = time.time()
+    path = request.url.path
+    method = request.method
+    
+    logger.info(f"Incoming {method} request to {path}")
+    
+    try:
+        response = await call_next(request)
+        process_time = (time.time() - start_time) * 1000
+        formatted_process_time = "{0:.2f}".format(process_time)
+        
+        status_code = response.status_code
+        logger.info(f"Completed {method} {path} - Status: {status_code} (Duration: {formatted_process_time}ms)")
+        
+        return response
+    except Exception as e:
+        process_time = (time.time() - start_time) * 1000
+        formatted_process_time = "{0:.2f}".format(process_time)
+        logger.exception(f"Exception during {method} {path} - Error: {str(e)} (Duration: {formatted_process_time}ms)")
+        raise
 
 # Configure CORS for React frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:3000", 
+        "http://localhost:5173",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -162,36 +198,12 @@ async def proxy_generate(request: ProxyRequest):
     Proxies text-only generation requests to the LLM router to secure API keys.
     """
     try:
-        # We reuse the LLM router logic for text, or perform a direct call.
-        # For simplicity and adhering to the frontend expectation, we will return standard text here.
-        import httpx
-        import json
-
-        # We prefer OpenAI or Anthropic for text proxy to return generic text
-        openai_key = os.getenv("OPENAI_API_KEY")
-        if openai_key:
-            url = "https://api.openai.com/v1/chat/completions"
-            headers = {
-                "Authorization": f"Bearer {openai_key}",
-                "Content-Type": "application/json"
-            }
-            messages = [{"role": "user", "content": request.prompt}]
-            if request.system_instruction:
-                messages.insert(0, {"role": "system", "content": request.system_instruction})
-
-            payload = {
-                "model": "gpt-4o-mini",
-                "messages": messages
-            }
-
-            async with httpx.AsyncClient() as client:
-                response = await client.post(url, headers=headers, json=payload, timeout=10.0)
-                if response.status_code == 200:
-                    data = response.json()
-                    return {"text": data["choices"][0]["message"]["content"]}
-
-        # Fallback text if no keys are found
-        return {"text": f"MHMZ Backend Proxy Response for: {request.prompt[:20]}..."}
+        # MHMZ: Use the centralized LLM Router for text proxying, ensuring correct key and model usage.
+        text_response = await llm_router.get_text(
+            prompt=request.prompt, 
+            system_instruction=request.system_instruction
+        )
+        return {"text": text_response}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

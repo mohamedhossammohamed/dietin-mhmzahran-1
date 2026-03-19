@@ -13,8 +13,18 @@ def test_analyze_image():
     image.save(img_byte_arr, format='JPEG')
     img_byte_arr = img_byte_arr.getvalue()
 
-    # Send request to orchestration endpoint
-    response = client.post(
+    from unittest.mock import patch, AsyncMock
+
+    with patch('main.llm_router.get_classification', new_callable=AsyncMock) as mock_classify:
+        mock_classify.return_value = {
+            "foodName": "Chicken",
+            "prep": "fried",
+            "is_liquid": False,
+            "confidence": 0.85
+        }
+    
+        # Send request to orchestration endpoint
+        response = client.post(
         "/api/v1/analyze/image",
         files={"full_image": ("test.jpg", img_byte_arr, "image/jpeg")}
     )

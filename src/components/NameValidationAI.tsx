@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { genAI } from "@/lib/gemini";
+import { extractJsonFromAI } from "@/lib/utils";
 
 interface NameValidationAIProps {
   name: string;
@@ -39,7 +40,7 @@ const NameValidationAI = ({ name, onValidation }: NameValidationAIProps) => {
 
       setIsValidating(true);
       try {
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
         
         const prompt = `You are a name validation assistant. Analyze if this input "${name}" is formatted as a proper person's name.
         Rules:
@@ -59,7 +60,7 @@ const NameValidationAI = ({ name, onValidation }: NameValidationAIProps) => {
         const response = await result.response;
         const text = response.text();
         
-        const cleanJson = text.replace(/```json\n|\n```|```/g, '').trim();
+        const cleanJson = extractJsonFromAI(text);
         const validation = JSON.parse(cleanJson);
         
         if (!validation.isValid) {

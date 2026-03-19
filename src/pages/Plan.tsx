@@ -1029,7 +1029,7 @@ const Plan = () => {
   // Update the generateWorkoutInsights function to use Gemini AI
   const generateWorkoutInsights = async (currentWorkout: ExerciseProgress[], history: WorkoutHistory[]) => {
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
 
       // Prepare workout data for AI analysis
       const workoutData = {

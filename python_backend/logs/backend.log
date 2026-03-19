@@ -1,0 +1,353 @@
+2026-03-19 19:38:26,168 - dietin_backend - WARNING - [llm_router.py:35] - No LLM API keys found. Defaulting to mock LLM router.
+2026-03-19 19:56:35,327 - dietin_backend - WARNING - [llm_router.py:35] - No LLM API keys found. Defaulting to mock LLM router.
+2026-03-19 20:21:24,144 - dietin_backend - WARNING - [llm_router.py:35] - No LLM API keys found. Defaulting to mock LLM router.
+2026-03-19 20:21:33,076 - dietin_backend - INFO - [main.py:18] - Incoming GET request to /health
+2026-03-19 20:21:33,108 - dietin_backend - INFO - [main.py:26] - Completed GET /health - Status: 200 (Duration: 32.03ms)
+2026-03-19 20:24:38,678 - dietin_backend - WARNING - [llm_router.py:35] - No LLM API keys found. Defaulting to mock LLM router.
+2026-03-19 20:24:38,678 - dietin_backend - WARNING - [llm_router.py:35] - No LLM API keys found. Defaulting to mock LLM router.
+2026-03-19 20:25:06,215 - dietin_backend - INFO - [llm_router.py:29] - LLM Router: Using Anthropic Claude as provider.
+2026-03-19 20:25:06,216 - dietin_backend - INFO - [llm_router.py:26] - LLM Router: Using Google Gemini as provider.
+2026-03-19 20:25:06,216 - dietin_backend - INFO - [llm_router.py:42] - LLM Router: Requesting classification using gemini provider.
+2026-03-19 20:25:06,627 - dietin_backend - ERROR - [llm_router.py:235] - Gemini Classification API Error: 404 - {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash-latest is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2026-03-19 20:26:10,691 - dietin_backend - INFO - [llm_router.py:28] - LLM Router: Using Google Gemini (gemini-2.0-flash) as provider.
+2026-03-19 20:26:10,692 - dietin_backend - INFO - [llm_router.py:28] - LLM Router: Using Google Gemini (gemini-2.0-flash) as provider.
+2026-03-19 20:26:10,692 - dietin_backend - INFO - [llm_router.py:59] - LLM Router: Requesting classification using gemini provider.
+2026-03-19 20:26:11,072 - dietin_backend - ERROR - [llm_router.py:252] - Gemini Classification API Error: 429 - {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\nPlease retry in 48.945589306s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_input_token_count",
+            "quotaId": "GenerateContentInputTokensPerModelPerMinute-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          },
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerMinutePerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "model": "gemini-2.0-flash",
+              "location": "global"
+            }
+          },
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "model": "gemini-2.0-flash",
+              "location": "global"
+            }
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "48s"
+      }
+    ]
+  }
+}
+
+2026-03-19 20:26:11,072 - dietin_backend - INFO - [llm_router.py:31] - LLM Router: Using Anthropic Claude as provider.
+2026-03-19 20:26:11,072 - dietin_backend - INFO - [llm_router.py:59] - LLM Router: Requesting classification using anthropic provider.
+2026-03-19 20:26:11,391 - dietin_backend - ERROR - [llm_router.py:301] - Anthropic Classification API Error: 400 - {"type":"error","error":{"type":"invalid_request_error","message":"messages.0.content.0.image.source.base64: The image was specified using the image/jpeg media type, but the image appears to be a image/gif image"},"request_id":"req_011CZCuhAju5DjedRb6TKCuc"}
+2026-03-19 20:26:38,173 - dietin_backend - INFO - [llm_router.py:28] - LLM Router: Using Google Gemini (gemini-2.0-flash) as provider.
+2026-03-19 20:26:38,174 - dietin_backend - INFO - [llm_router.py:28] - LLM Router: Using Google Gemini (gemini-2.0-flash) as provider.
+2026-03-19 20:26:38,174 - dietin_backend - INFO - [llm_router.py:59] - LLM Router: Requesting classification using gemini provider.
+2026-03-19 20:26:38,831 - dietin_backend - ERROR - [llm_router.py:252] - Gemini Classification API Error: 429 - {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 21.196121592s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          },
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerMinutePerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          },
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_input_token_count",
+            "quotaId": "GenerateContentInputTokensPerModelPerMinute-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "21s"
+      }
+    ]
+  }
+}
+
+2026-03-19 20:26:38,831 - dietin_backend - INFO - [llm_router.py:31] - LLM Router: Using Anthropic Claude as provider.
+2026-03-19 20:26:38,832 - dietin_backend - INFO - [llm_router.py:59] - LLM Router: Requesting classification using anthropic provider.
+2026-03-19 20:26:40,711 - dietin_backend - ERROR - [llm_router.py:299] - Anthropic parsing error: Extra data: line 8 column 1 (char 87)
+2026-03-19 20:26:53,938 - dietin_backend - INFO - [llm_router.py:28] - LLM Router: Using Google Gemini (gemini-2.0-flash) as provider.
+2026-03-19 20:26:53,938 - dietin_backend - INFO - [llm_router.py:28] - LLM Router: Using Google Gemini (gemini-2.0-flash) as provider.
+2026-03-19 20:26:53,938 - dietin_backend - INFO - [llm_router.py:59] - LLM Router: Requesting classification using gemini provider.
+2026-03-19 20:26:54,240 - dietin_backend - ERROR - [llm_router.py:252] - Gemini Classification API Error: 429 - {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-2.0-flash\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-2.0-flash\nPlease retry in 5.781869137s.",
+    "status": "RESOURCE_EXHAUSTED",
+    "details": [
+      {
+        "@type": "type.googleapis.com/google.rpc.Help",
+        "links": [
+          {
+            "description": "Learn more about Gemini API quotas",
+            "url": "https://ai.google.dev/gemini-api/docs/rate-limits"
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+        "violations": [
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerDayPerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          },
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests",
+            "quotaId": "GenerateRequestsPerMinutePerProjectPerModel-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          },
+          {
+            "quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_input_token_count",
+            "quotaId": "GenerateContentInputTokensPerModelPerMinute-FreeTier",
+            "quotaDimensions": {
+              "location": "global",
+              "model": "gemini-2.0-flash"
+            }
+          }
+        ]
+      },
+      {
+        "@type": "type.googleapis.com/google.rpc.RetryInfo",
+        "retryDelay": "5s"
+      }
+    ]
+  }
+}
+
+2026-03-19 20:26:54,241 - dietin_backend - INFO - [llm_router.py:31] - LLM Router: Using Anthropic Claude as provider.
+2026-03-19 20:26:54,242 - dietin_backend - INFO - [llm_router.py:59] - LLM Router: Requesting classification using anthropic provider.
+2026-03-19 20:35:15,681 - dietin_backend - WARNING - [llm_router.py:37] - No LLM API keys found. Defaulting to mock LLM router.
+2026-03-19 20:35:23,249 - dietin_backend - INFO - [main.py:18] - Incoming GET request to /health
+2026-03-19 20:35:23,268 - dietin_backend - INFO - [main.py:26] - Completed GET /health - Status: 200 (Duration: 18.87ms)
+2026-03-19 20:36:18,647 - dietin_backend - INFO - [main.py:18] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 20:36:18,653 - dietin_backend - INFO - [main.py:26] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 6.93ms)
+2026-03-19 20:38:16,075 - dietin_backend - WARNING - [llm_router.py:36] - No LLM API keys found. Defaulting to mock LLM router.
+2026-03-19 20:38:24,199 - dietin_backend - WARNING - [llm_router.py:36] - No LLM API keys found. Defaulting to mock LLM router.
+2026-03-19 20:38:30,995 - dietin_backend - WARNING - [llm_router.py:36] - No LLM API keys found. Defaulting to mock LLM router.
+2026-03-19 20:38:42,903 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-2.0-flash) as provider.
+2026-03-19 20:38:49,999 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-2.0-flash) as provider.
+2026-03-19 20:39:01,344 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-2.0-flash) as provider.
+2026-03-19 20:44:59,436 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 20:44:59,869 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 432.89ms)
+2026-03-19 20:45:51,747 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 20:45:52,106 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 359.18ms)
+2026-03-19 20:52:57,335 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 20:52:57,655 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 319.94ms)
+2026-03-19 20:53:38,015 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-2.0-flash) as provider.
+2026-03-19 20:57:11,579 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-2.0-flash) as provider.
+2026-03-19 20:57:46,761 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-2.0-flash) as provider.
+2026-03-19 20:57:46,778 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 20:57:47,200 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 421.91ms)
+2026-03-19 21:01:18,417 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 21:01:18,733 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 316.65ms)
+2026-03-19 21:01:27,338 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 21:01:27,627 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 290.00ms)
+2026-03-19 21:06:47,140 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:06:49,740 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:06:58,067 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:06:58,141 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/analyze/image
+2026-03-19 21:06:58,191 - dietin_backend - INFO - [llm_router.py:58] - LLM Router: Requesting classification using gemini provider.
+2026-03-19 21:06:58,506 - dietin_backend - ERROR - [llm_router.py:298] - Gemini Classification API Error: 404 - {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-3.1-flash-light is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2026-03-19 21:07:41,101 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:07:46,749 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:07:50,082 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:07:52,766 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:07:55,494 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:07:59,153 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:07:59,182 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/analyze/image
+2026-03-19 21:09:01,782 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:09:05,188 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:09:10,819 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:09:13,530 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:09:21,251 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:09:21,300 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/analyze/image
+2026-03-19 21:10:53,737 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 21:10:54,147 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 411.05ms)
+2026-03-19 21:21:35,317 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 21:21:36,697 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 1381.05ms)
+2026-03-19 21:25:58,729 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 21:25:59,058 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 329.25ms)
+2026-03-19 21:26:02,003 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 21:26:02,760 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 756.56ms)
+2026-03-19 21:27:58,761 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 21:27:59,148 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 387.64ms)
+2026-03-19 21:30:26,929 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:30:30,303 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:31:48,642 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 21:31:49,176 - dietin_backend - ERROR - [llm_router.py:87] - Gemini API error: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-3.1-flash-light is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2026-03-19 21:31:49,177 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 500 (Duration: 535.13ms)
+2026-03-19 21:39:50,245 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 21:39:50,626 - dietin_backend - ERROR - [llm_router.py:87] - Gemini API error: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-3.1-flash-light is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2026-03-19 21:39:50,628 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 500 (Duration: 383.19ms)
+2026-03-19 21:54:05,908 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 21:54:06,223 - dietin_backend - ERROR - [llm_router.py:87] - Gemini API error: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-3.1-flash-light is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2026-03-19 21:54:06,224 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 500 (Duration: 316.60ms)
+2026-03-19 21:55:54,611 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:55:57,349 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:56:01,445 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:56:04,874 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-light) as provider.
+2026-03-19 21:57:15,601 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 21:57:16,221 - dietin_backend - ERROR - [llm_router.py:87] - ==================================================
+2026-03-19 21:57:16,222 - dietin_backend - ERROR - [llm_router.py:88] - GEMINI TEXT API ERROR: 404
+2026-03-19 21:57:16,222 - dietin_backend - ERROR - [llm_router.py:89] - Response Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-3.1-flash-light is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2026-03-19 21:57:16,222 - dietin_backend - ERROR - [llm_router.py:90] - ==================================================
+2026-03-19 21:57:16,223 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 500 (Duration: 622.00ms)
+2026-03-19 22:09:25,024 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-1.5-flash) as provider.
+2026-03-19 22:09:28,065 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-1.5-flash) as provider.
+2026-03-19 22:20:54,385 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 22:20:54,719 - dietin_backend - ERROR - [llm_router.py:87] - ==================================================
+2026-03-19 22:20:54,720 - dietin_backend - ERROR - [llm_router.py:88] - GEMINI TEXT API ERROR: 404
+2026-03-19 22:20:54,720 - dietin_backend - ERROR - [llm_router.py:89] - Response Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2026-03-19 22:20:54,720 - dietin_backend - ERROR - [llm_router.py:90] - ==================================================
+2026-03-19 22:20:54,721 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 500 (Duration: 335.87ms)
+2026-03-19 22:21:54,704 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-1.5-flash) as provider.
+2026-03-19 22:21:57,903 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-1.5-flash) as provider.
+2026-03-19 22:23:16,595 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 22:23:16,979 - dietin_backend - ERROR - [llm_router.py:87] - ==================================================
+2026-03-19 22:23:16,979 - dietin_backend - ERROR - [llm_router.py:88] - GEMINI TEXT API ERROR: 404
+2026-03-19 22:23:16,979 - dietin_backend - ERROR - [llm_router.py:89] - Response Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2026-03-19 22:23:16,979 - dietin_backend - ERROR - [llm_router.py:90] - ==================================================
+2026-03-19 22:23:16,979 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 500 (Duration: 385.11ms)
+2026-03-19 22:25:00,789 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-19 22:25:04,247 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-19 23:11:40,361 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 23:11:53,748 - dietin_backend - ERROR - [llm_router.py:87] - ==================================================
+2026-03-19 23:11:53,749 - dietin_backend - ERROR - [llm_router.py:88] - GEMINI TEXT API ERROR: 404
+2026-03-19 23:11:53,749 - dietin_backend - ERROR - [llm_router.py:89] - Response Body: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-3.1-flash-lite-preview is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2026-03-19 23:11:53,749 - dietin_backend - ERROR - [llm_router.py:90] - ==================================================
+2026-03-19 23:11:53,751 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 500 (Duration: 13389.53ms)
+2026-03-19 23:14:15,132 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-19 23:14:17,817 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-19 23:15:24,348 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-19 23:15:32,802 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 8453.53ms)
+2026-03-19 23:45:50,165 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-19 23:45:52,718 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.

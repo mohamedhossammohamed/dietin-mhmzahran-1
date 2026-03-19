@@ -70,7 +70,7 @@ import {
   Zap,
   Lock
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, extractJsonFromAI } from "@/lib/utils";
 import { motion, AnimatePresence, PanInfo, useMotionValue, useTransform } from "framer-motion";
 import { useMealStore, MealSuggestion as MealSuggestionType } from "@/stores/mealStore";
 import NavHide from './NavHide';
@@ -621,7 +621,7 @@ const MealSuggestionsAI: React.FC<MealSuggestionsAIProps> = ({
         throw new Error('Maximum retry attempts reached');
       }
 
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
 
       const currentMealType = getMealType(new Date().getHours());
       const timestamp = Date.now();
@@ -739,7 +739,7 @@ Return EXACTLY 3 items in this JSON format (no extra text):
       const text = response.text();
 
       // Clean up the response text and ensure it starts with [ and ends with ]
-      const cleanJson = text.replace(/```json\n|\n```|```/g, '').trim();
+      const cleanJson = extractJsonFromAI(text);
       if (!cleanJson.startsWith('[') || !cleanJson.endsWith(']')) {
         throw new Error('Invalid JSON format received');
       }
@@ -890,7 +890,7 @@ Return EXACTLY 3 items in this JSON format (no extra text):
       updateLoadingStep('recipe', 0, 'loading');
       setGenerationProgress(10);
 
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
 
       const isArabic = (i18n.language || '').toLowerCase().startsWith('ar');
       const languageInstruction = isArabic
@@ -920,7 +920,7 @@ Return EXACTLY 3 items in this JSON format (no extra text):
       setGenerationProgress(30);
 
       // Clean up the response text to ensure valid JSON
-      const cleanJson = text.replace(/```json\n|\n```|```/g, '').trim();
+      const cleanJson = extractJsonFromAI(text);
       const recipeData = JSON.parse(cleanJson);
 
       updateLoadingStep('recipe', 0, 'complete');

@@ -1,8 +1,8 @@
 import { motion, AnimatePresence, PanInfo, useMotionValue, useTransform } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import NavHide from "./NavHide";
-import { cn } from "@/lib/utils";
-import { Camera, Pencil, Search, Sparkles, X, Plus, Tag, ChevronLeft, Loader2, BarChart3, Utensils, Flame, Lock } from "lucide-react";
+import { cn, extractJsonFromAI } from "@/lib/utils";
+import { Camera, Pencil, Search, Sparkles, X, Plus, Tag, ChevronLeft, Loader2, BarChart3, Utensils, Flame, Lock, Clipboard, Check } from "lucide-react";
 import { useUserStore } from "@/stores/userStore";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { genAI, analyzeNutrition } from "@/lib/gemini";
@@ -13,6 +13,7 @@ import ProSubscriptionPanel from "./ProSubscriptionPanel";
 import MealAnalysisAnimate from "./MealAnalysisAnimate";
 import ImproveAI from "./ImproveAI";
 import { useTranslation } from "react-i18next";
+import { useToast } from "@/components/ui/use-toast";
 
 // Modern font styles
 const fontStyles = {
@@ -91,6 +92,7 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [photoAnalysisResult, setPhotoAnalysisResult] = useState<AnalysisResult | null>(null);
   const [isPhotoAnalyzing, setIsPhotoAnalyzing] = useState(false);
+  const [isCopying, setIsCopying] = useState(false);
   const [showPhotoInput, setShowPhotoInput] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isTransitioningToSearchRef = useRef(false);
@@ -121,6 +123,7 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
   const [isImproving, setIsImproving] = useState(false);
 
   const { addCalorieEntry, user, dailyMealAnalysis, incrementMealAnalysis } = useUserStore();
+  const { toast } = useToast();
 
   const tags = [
     t('mealAnalysis.tags.breakfast'),
@@ -388,7 +391,7 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
         throw new Error('Quota reached');
       }
 
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
 
       // Convert image to base64
       const reader = new FileReader();
@@ -441,12 +444,12 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
 
           console.log('Raw photo analysis response:', text);
 
-          // Clean the response - extract only the JSON part
-          let cleanedText = text;
-          if (text.includes("```")) {
-            cleanedText = text.replace(/```(?:json)?\n([\s\S]*?)```/g, "$1").trim();
+          const cleanedText = extractJsonFromAI(text);
+          if (!cleanedText) {
+             console.error("No JSON found in photo analysis:", text);
+             throw new Error("Invalid response format: No JSON object found.");
           }
-
+          
           console.log('Cleaned photo analysis text:', cleanedText);
 
           const analysis = JSON.parse(cleanedText);
@@ -471,6 +474,16 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
               throw new Error(`Invalid response: missing required fields: ${missingFields.join(', ')}`);
             }
 
+            // Coerce numeric fields to valid numbers
+            ['calories', 'protein', 'carbs', 'fat', 'score', 'cholesterol', 'magnesium', 'sugar', 'fiber', 'sodium', 'potassium', 'vitaminA', 'vitaminC', 'calcium', 'iron'].forEach(field => {
+              if (analysis[field] !== undefined && analysis[field] !== null) {
+                 const parsed = parseFloat(String(analysis[field]).replace(/[^0-9.-]/g, ''));
+                 if (!isNaN(parsed)) {
+                   analysis[field] = parsed;
+                 }
+              }
+            });
+
             // Ensure numeric fields are valid numbers
             ['calories', 'protein', 'carbs', 'fat', 'score'].forEach(field => {
               const value = analysis[field];
@@ -491,11 +504,11 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
             incrementMealAnalysis();
           }
 
-        } catch (error) {
-          console.error('Failed to parse AI response:', error);
+        } catch (error: any) {
+          console.error(' [PHOTO ANALYSIS PROXY ERROR]: Failed to parse AI response:', error);
           setPhotoAnalysisResult({
             isFood: false,
-            error: t('mealAnalysis.errors.photoAnalyzeFailed')
+            error: `DEV ERROR: ${error.message}`
           } as AnalysisResult);
         } finally {
           setIsPhotoAnalyzing(false);
@@ -503,6 +516,7 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
       };
 
       reader.onerror = () => {
+        console.error(' [PHOTO ANALYSIS FILE READ ERROR]');
         setPhotoAnalysisResult({
           isFood: false,
           error: t('mealAnalysis.errors.fileReadFailed')
@@ -511,13 +525,13 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
       };
 
       reader.readAsDataURL(file);
-    } catch (error) {
-      console.error("Photo analysis error:", error);
+    } catch (error: any) {
+      console.error(" [PHOTO ANALYSIS ERROR]:", error);
       setPhotoAnalysisResult({
         isFood: false,
         error: error.message === 'Quota reached'
           ? t('mealAnalysis.errors.quotaReached')
-          : t('mealAnalysis.errors.photoAnalyzeTryAgain')
+          : `DEV NET ERROR: ${error.message}`
       } as AnalysisResult);
       setIsPhotoAnalyzing(false);
     }
@@ -579,7 +593,7 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
 
   const generateRecommendations = async (food: any) => {
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
 
       const prompt = `Analyze this meal and provide recommendations for improvement:
       Food: ${food.description}
@@ -608,7 +622,8 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
       const text = response.text();
 
       try {
-        const recommendations = JSON.parse(text);
+        const cleanedText = extractJsonFromAI(text);
+        const recommendations = JSON.parse(cleanedText);
         setRecommendations(recommendations);
       } catch (error) {
         console.error('Failed to parse recommendations:', error);
@@ -896,7 +911,7 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
         throw new Error('Quota reached');
       }
 
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
       const promptLanguage = i18n.language?.startsWith('ar') ? 'Arabic' : 'English';
 
       const prompt = `Analyze this meal description and provide detailed nutritional information.
@@ -950,12 +965,11 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
       console.log('Raw AI response:', text);
 
       try {
-        // Clean the response text to handle markdown code blocks
-        let cleanedText = text;
-
-        // Remove markdown code blocks if present
-        if (text.includes("```")) {
-          cleanedText = text.replace(/```(?:json)?\n([\s\S]*?)```/g, "$1").trim();
+        const cleanedText = extractJsonFromAI(text);
+        
+        if (!cleanedText) {
+           console.error("No JSON found in AI response:", text);
+           throw new Error("Invalid response format: No JSON object found.");
         }
 
         console.log('Cleaned response text:', cleanedText);
@@ -982,6 +996,16 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
             throw new Error(`Invalid response: missing required fields: ${missingFields.join(', ')}`);
           }
 
+          // Coerce numeric fields to valid numbers
+          ['calories', 'protein', 'carbs', 'fat', 'score', 'cholesterol', 'magnesium', 'sugar', 'fiber', 'sodium', 'potassium', 'vitaminA', 'vitaminC', 'calcium', 'iron'].forEach(field => {
+            if (analysisData[field] !== undefined && analysisData[field] !== null) {
+               const parsed = parseFloat(String(analysisData[field]).replace(/[^0-9.-]/g, ''));
+               if (!isNaN(parsed)) {
+                 analysisData[field] = parsed;
+               }
+            }
+          });
+
           // Ensure numeric fields are valid numbers
           ['calories', 'protein', 'carbs', 'fat', 'score'].forEach(field => {
             const value = analysisData[field];
@@ -1001,19 +1025,21 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
           console.log('Incrementing meal analysis quota for free user');
           incrementMealAnalysis();
         }
-      } catch (parseError) {
+      } catch (parseError: any) {
         console.error("Failed to parse AI response:", parseError);
         console.log("Raw response:", text);
         setAnalysisResult({
           isFood: false,
-          error: "Failed to analyze the meal. The AI response was not in the expected format."
+          error: `DEV ERROR: ${parseError.message}`
         } as AnalysisResult);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("AI analysis error:", error);
       setAnalysisResult({
         isFood: false,
-        error: "Failed to analyze the meal. Please try again."
+        error: error.message === 'Quota reached' 
+          ? t('mealAnalysis.errors.quotaReached') 
+          : `DEV NET ERROR: ${error.message}`
       } as AnalysisResult);
     } finally {
       setIsAnalyzing(false);
@@ -1059,7 +1085,7 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
 
   const handleImprove = async (improveText: string) => {
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
 
       const prompt = `Analyze this meal with the following improvement request and provide updated nutritional information.
       
@@ -1113,15 +1139,12 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
       console.log('Raw AI improvement response:', text);
 
       try {
-        // Clean the response text to handle markdown code blocks
-        let cleanedText = text;
-
-        // Remove markdown code blocks if present
-        if (text.includes("```")) {
-          cleanedText = text.replace(/```(?:json)?\n([\s\S]*?)```/g, "$1").trim();
-        }
-
+        const cleanedText = extractJsonFromAI(text);
         console.log('Cleaned improvement response:', cleanedText);
+
+        if (!cleanedText) {
+          throw new Error('Invalid response format: No JSON found in improvement.');
+        }
 
         const improvedAnalysis = JSON.parse(cleanedText);
         console.log('Parsed improvement data:', improvedAnalysis);
@@ -1159,14 +1182,22 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
 
         setAnalysisResult(improvedAnalysis);
 
-      } catch (parseError) {
+      } catch (parseError: any) {
         console.error("Failed to parse AI improvement response:", parseError);
-        throw new Error("Failed to improve the meal analysis. The AI response was not in the expected format.");
+        throw new Error(`DEV ERROR: ${parseError.message}`);
       }
     } catch (error) {
       console.error("AI improvement error:", error);
-      throw new Error("Failed to improve the meal analysis. Please try again.");
+      throw new Error(t('mealAnalysis.errors.improveGenericError'));
     }
+  };
+
+  const handleCopyError = (errorMessage: string) => {
+    if (!errorMessage) return;
+    navigator.clipboard.writeText(errorMessage).then(() => {
+      setIsCopying(true);
+      setTimeout(() => setIsCopying(false), 2000);
+    });
   };
 
   return (
@@ -1636,18 +1667,28 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
                           <h3 className={`text-lg ${fontStyles.heading} text-[#1d1d1f] dark:text-white mb-2 text-center`}>
                             {t('mealAnalysis.errors.analyzeMealFailed')}
                           </h3>
-                          <p className={`${fontStyles.body} text-[#1d1d1f]/70 dark:text-white/70 text-center mb-6 max-w-[280px]`}>
+                          <p className={`${fontStyles.body} text-[#1d1d1f]/70 dark:text-white/70 text-center mb-6 max-w-[280px] break-words`}>
                             {analysisResult.error || t('mealAnalysis.errors.tryDetailedDescription')}
                           </p>
-                          <button
-                            onClick={() => {
-                              setAnalysisResult(null);
-                              setShowInput(true);
-                            }}
-                            className={`px-6 py-3 rounded-xl bg-gradient-to-r from-[#007AFF] to-[#0055FF] text-white ${fontStyles.button} transition-all duration-300 hover:shadow-lg active:scale-[0.98] shadow-md`}
-                          >
-                            {t('common.tryAgain')}
-                          </button>
+                          <div className="flex gap-3">
+                            <button
+                              onClick={() => {
+                                setAnalysisResult(null);
+                                setShowInput(true);
+                              }}
+                              className={`px-6 py-3 rounded-xl bg-gradient-to-r from-[#007AFF] to-[#0055FF] text-white ${fontStyles.button} transition-all duration-300 hover:shadow-lg active:scale-[0.98] shadow-md`}
+                            >
+                              {t('common.tryAgain')}
+                            </button>
+                            {analysisResult.error && (
+                              <button
+                                onClick={() => handleCopyError(analysisResult.error || '')}
+                                className="p-3 rounded-xl bg-white/10 dark:bg-white/10 text-[#1d1d1f] dark:text-white border border-black/5 dark:border-white/10 transition-all duration-300 hover:bg-white/20 active:scale-[0.95]"
+                              >
+                                {isCopying ? <Check className="w-5 h-5 text-green-500" /> : <Clipboard className="w-5 h-5" />}
+                              </button>
+                            )}
+                          </div>
                         </motion.div>
                       )}
                     </motion.div>
@@ -1992,18 +2033,37 @@ const MealAnalysis = ({ isOpen, onClose, setIsSearchOpen, editEntry }: MealAnaly
                           <h3 className={`text-lg ${fontStyles.heading} text-[#1d1d1f] dark:text-white mb-2 text-center`}>
                             {t('mealAnalysis.errors.analyzePhotoFailed')}
                           </h3>
-                          <p className={`${fontStyles.body} text-[#1d1d1f]/70 dark:text-white/70 text-center mb-6 max-w-[280px]`}>
+                          <p className={`${fontStyles.body} text-[#1d1d1f]/70 dark:text-white/70 text-center mb-6 max-w-[280px] break-words line-clamp-4`}>
                             {photoAnalysisResult.error || t('mealAnalysis.errors.tryClearerPhoto')}
                           </p>
-                          <button
-                            onClick={() => {
-                              setPhotoAnalysisResult(null);
-                              setShowPhotoInput(true);
-                            }}
-                            className={`px-6 py-3 rounded-xl bg-gradient-to-r from-[#007AFF] to-[#0055FF] text-white ${fontStyles.button} transition-all duration-300 hover:shadow-lg active:scale-[0.98] shadow-md`}
-                          >
-                            Try Again
-                          </button>
+                          <div className="flex gap-3">
+                            <button
+                              onClick={() => {
+                                setPhotoAnalysisResult(null);
+                                setShowPhotoInput(true);
+                              }}
+                              className={`px-6 py-3 rounded-xl bg-gradient-to-r from-[#007AFF] to-[#0055FF] text-white ${fontStyles.button} transition-all duration-300 hover:shadow-lg active:scale-[0.98] shadow-md`}
+                            >
+                              {t('common.tryAgain')}
+                            </button>
+                            {photoAnalysisResult.error && (
+                              <button
+                                onClick={() => {
+                                  const errorMsg = photoAnalysisResult.error || "";
+                                  navigator.clipboard.writeText(errorMsg);
+                                  toast({
+                                    title: "Copied!",
+                                    description: "Error message copied to clipboard",
+                                    duration: 2000,
+                                  });
+                                }}
+                                className="px-4 py-3 rounded-xl bg-white/10 dark:bg-white/10 border border-[#1d1d1f]/10 dark:border-white/10 hover:bg-white/20 transition-all duration-200"
+                                title="Copy full error"
+                              >
+                                <Clipboard className="w-5 h-5 text-[#1d1d1f] dark:text-white" />
+                              </button>
+                            )}
+                          </div>
                         </motion.div>
                       )}
                     </motion.div>
