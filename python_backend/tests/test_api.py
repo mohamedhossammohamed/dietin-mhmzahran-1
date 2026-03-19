@@ -6,8 +6,7 @@ from PIL import Image
 
 client = TestClient(app)
 
-@pytest.mark.asyncio
-async def test_analyze_image():
+def test_analyze_image():
     # Create a dummy image
     image = Image.new("RGB", (224, 224), "white")
     img_byte_arr = io.BytesIO()
@@ -31,5 +30,6 @@ async def test_analyze_image():
     assert "macros" in nutrition_data
     assert "protein" in nutrition_data["macros"]
     assert "confidenceScore" in nutrition_data
+    assert 0.0 <= nutrition_data["confidenceScore"] <= 1.0
     assert "warnings" in nutrition_data
     assert isinstance(nutrition_data["warnings"], list)

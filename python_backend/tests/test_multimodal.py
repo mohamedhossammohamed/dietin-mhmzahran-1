@@ -1,14 +1,13 @@
 import pytest
 import io
-import os
+import shutil
 from fastapi.testclient import TestClient
 from main import app
 from PIL import Image
 
 client = TestClient(app)
 
-@pytest.mark.asyncio
-async def test_analyze_label():
+def test_analyze_label():
     image = Image.new("RGB", (224, 224), "white")
     img_byte_arr = io.BytesIO()
     image.save(img_byte_arr, format='JPEG')
@@ -26,8 +25,7 @@ async def test_analyze_label():
     assert "calories" in data["data"]
     assert "macros" in data["data"]
 
-@pytest.mark.asyncio
-async def test_analyze_speech():
+def test_analyze_speech():
     # If ffmpeg is not installed on the system, the endpoint will return a 500 error gracefully.
     # We will test the endpoint structure. If ffmpeg is missing, we assert the specific 500 detail.
     # First, let's create a dummy audio file (just random bytes to trigger the file logic)
@@ -41,7 +39,7 @@ async def test_analyze_speech():
     # If ffmpeg is installed, whisper might fail to parse the dummy bytes (raising 500)
     # or it might return an empty transcription.
     # If ffmpeg is NOT installed, we expect our explicit 500 detail.
-    if os.system("ffmpeg -version > /dev/null 2>&1") != 0:
+    if shutil.which("ffmpeg") is None:
         assert response.status_code == 500
         assert "FFmpeg is not installed" in response.json()["detail"]
     else:

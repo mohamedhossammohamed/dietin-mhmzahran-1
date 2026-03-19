@@ -5,6 +5,7 @@ pytest
 pytest-asyncio
 httpx
 python-dotenv
+numpy
 # Core PyTorch (using standard package for standard environments, fallback for MPS on target hardware)
 torch
 torchvision

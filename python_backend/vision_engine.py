@@ -11,10 +11,12 @@ class VisionPipeline:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(VisionPipeline, cls).__new__(cls)
-            cls._instance._initialize()
+            cls._instance._initialized = False
         return cls._instance
 
     def _initialize(self):
+        if self._initialized:
+            return
         # Determine optimal device
         if torch.backends.mps.is_available():
             self.device = "mps"
@@ -26,6 +28,8 @@ class VisionPipeline:
         print(f"Loading Depth-Anything (Small HF) on {self.device}...")
         self.processor = AutoImageProcessor.from_pretrained("LiheYoung/depth-anything-small-hf")
         self.model = AutoModelForDepthEstimation.from_pretrained("LiheYoung/depth-anything-small-hf").to(self.device)
+        self.model.eval()
+        self._initialized = True
 
     def estimate_volume(self, image_bytes: bytes) -> float:
         """
@@ -34,12 +38,12 @@ class VisionPipeline:
         - Mobile camera distance: 30 cm
         - Mobile camera Field of View (FOV): 70 degrees
         """
+        self._initialize()
         # Convert bytes to PIL Image
         try:
             image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
         except Exception as e:
-            print(f"Failed to load image: {e}")
-            return 0.0
+            raise ValueError(f"Failed to decode image: {e}") from e
 
         width, height = image.size
 
