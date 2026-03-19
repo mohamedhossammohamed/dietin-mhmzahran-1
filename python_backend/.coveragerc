@@ -1,7 +1,0 @@
-[run]
-source = main,nutrition_engine,vision_engine,liquid_logic
-omit = test_*,stress_test*,diagnose*,gen_images*,venv/*
-
-[report]
-show_missing = true
-fail_under = 90
