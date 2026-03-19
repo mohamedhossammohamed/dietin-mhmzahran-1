@@ -54,3 +54,6 @@ venv/
 .venv/
 env/
 python_backend/venv/
+
+.gemini/
+gha-creds-*.json
