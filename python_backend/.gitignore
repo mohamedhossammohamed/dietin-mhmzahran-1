@@ -1,0 +1,14 @@
+# Ignore Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+.env
+
+# ChromaDB persistence directory
+chroma_db/
+
+# pytest cache
+.pytest_cache/
