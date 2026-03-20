@@ -1,11 +1,13 @@
 import json
 import os
+import time
 from typing import List, Optional
 from pydantic import BaseModel, Field
 import chromadb
 from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
 from rank_bm25 import BM25Okapi
+from logger import logger
 
 class NutritionRecord(BaseModel):
     id: str
@@ -46,102 +48,126 @@ class HybridSearchEngine:
     def _initialize(self):
         if self._initialized:
             return
-        self.client = chromadb.PersistentClient(path=self.db_path)
-        self.collection = self.client.get_or_create_collection(name="nutrition_data")
-        # Load embedding model on CPU to ensure it works reliably across environments for DB seed/search
-        self.embedding_model = SentenceTransformer("all-MiniLM-L6-v2", device="cpu")
-        self.records = MOCK_FOOD_DATA
-        self.corpus = [f"{r['name']} {r['preparation']}".lower() for r in self.records]
-        # Precompute O(1) reverse-lookup map for BM25 scoring
-        self.corpus_index_map = {text: idx for idx, text in enumerate(self.corpus)}
-        tokenized_corpus = [doc.split(" ") for doc in self.corpus]
-        self.bm25 = BM25Okapi(tokenized_corpus)
+        
+        start_time = time.time()
+        logger.info(f"Nutrition Engine: Initializing Hybrid Search Engine at {self.db_path}")
+        
+        try:
+            self.client = chromadb.PersistentClient(path=self.db_path)
+            self.collection = self.client.get_or_create_collection(name="nutrition_data")
+            
+            logger.info("Nutrition Engine: Loading SentenceTransformer model (all-MiniLM-L6-v2) on CPU...")
+            self.embedding_model = SentenceTransformer("all-MiniLM-L6-v2", device="cpu")
+            
+            self.records = MOCK_FOOD_DATA
+            self.corpus = [f"{r['name']} {r['preparation']}".lower() for r in self.records]
+            self.corpus_index_map = {text: idx for idx, text in enumerate(self.corpus)}
+            tokenized_corpus = [doc.split(" ") for doc in self.corpus]
+            self.bm25 = BM25Okapi(tokenized_corpus)
 
-        # Check if we need to seed
-        if self.collection.count() == 0:
-            self.seed_database()
-        self._initialized = True
+            if self.collection.count() == 0:
+                self.seed_database()
+            
+            self._initialized = True
+            duration = (time.time() - start_time) * 1000
+            logger.info(f"Nutrition Engine: Initialized successfully in {duration:.2f}ms")
+        except Exception as e:
+            logger.error(f"Nutrition Engine INIT FAILURE: {str(e)}")
+            raise
 
     def seed_database(self):
-        print("Seeding database with mock nutrition data...")
-        ids = [r["id"] for r in self.records]
-        documents = [f"{r['name']} {r['preparation']}" for r in self.records]
-        metadatas = [r for r in self.records]
+        logger.info(f"Nutrition Engine: Seeding database with {len(self.records)} mock records...")
+        try:
+            ids = [r["id"] for r in self.records]
+            documents = [f"{r['name']} {r['preparation']}" for r in self.records]
+            metadatas = [r for r in self.records]
 
-        # Generate embeddings
-        embeddings = self.embedding_model.encode(documents).tolist()
+            # Generate embeddings
+            embeddings = self.embedding_model.encode(documents).tolist()
 
-        self.collection.add(
-            ids=ids,
-            documents=documents,
-            metadatas=metadatas,
-            embeddings=embeddings
-        )
-        print(f"Successfully seeded {len(self.records)} records.")
+            self.collection.add(
+                ids=ids,
+                documents=documents,
+                metadatas=metadatas,
+                embeddings=embeddings
+            )
+            logger.info(f"Nutrition Engine: Successfully seeded {len(self.records)} records.")
+        except Exception as e:
+            logger.error(f"Nutrition Engine SEED FAILURE: {str(e)}")
+            raise
 
     def search(self, query: str, prep_filter: Optional[str] = None) -> NutritionRecord:
         """
         Perform a hybrid search using dense vectors (Chroma) and sparse (BM25) penalty.
         """
-        self._initialize()
-        # 1. Dense Vector Search (Top 10 candidates)
-        query_embedding = self.embedding_model.encode([query]).tolist()[0]
-        results = self.collection.query(
-            query_embeddings=[query_embedding],
-            n_results=10
-        )
-
-        if not results['metadatas'] or not results['metadatas'][0]:
+        start_time = time.time()
+        logger.debug(f"Nutrition Engine: Starting search for '{query}' (Prep Filter: {prep_filter})")
+        
+        try:
+            self._initialize()
+        except Exception as e:
+            logger.error(f"Nutrition Engine FAILURE: Search aborted due to initialization failure: {str(e)}")
             return None
 
-        candidates = results['metadatas'][0]
+        try:
+            # 1. Dense Vector Search (Top 10 candidates)
+            query_embedding = self.embedding_model.encode([query]).tolist()[0]
+            results = self.collection.query(
+                query_embeddings=[query_embedding],
+                n_results=10
+            )
 
-        # 2. Sparse BM25 Keyword Penalty Calculation
-        best_candidate = None
-        best_score = -float('inf')
+            if not results['metadatas'] or not results['metadatas'][0]:
+                logger.warning(f"Nutrition Engine: No results found for query '{query}'")
+                return None
 
-        # If prep_filter exists, we calculate BM25 scores for the corpus to see how well it matches
-        bm25_scores = None
-        if prep_filter:
-            tokenized_query = prep_filter.lower().split(" ")
-            bm25_scores = self.bm25.get_scores(tokenized_query)
+            candidates = results['metadatas'][0]
+            logger.debug(f"Nutrition Engine: Found {len(candidates)} dense candidates")
 
-        for idx, candidate in enumerate(candidates):
-            # Dense similarity score (approximate, since chromadb returns distance, lower distance is better)
-            # We convert distance to a similarity score for combining
-            distance = results['distances'][0][idx]
-            dense_score = 1.0 / (1.0 + distance)
+            # 2. Sparse BM25 Keyword Penalty Calculation
+            best_candidate = None
+            best_score = -float('inf')
 
-            # Sparse Penalty: if prep_filter is provided, use BM25 score to penalize/reward
-            sparse_modifier = 0.0
-            if prep_filter and bm25_scores is not None:
-                # Find the index of this candidate in the original corpus
-                # (assuming ids map exactly or we search by name/prep)
-                # For simplicity, we search the corpus list to find the match index
-                cand_str = f"{candidate['name']} {candidate['preparation']}".lower()
-                corpus_idx = self.corpus_index_map.get(cand_str)
-                if corpus_idx is not None:
-                    bm25_score = bm25_scores[corpus_idx]
+            bm25_scores = None
+            if prep_filter:
+                tokenized_query = prep_filter.lower().split(" ")
+                bm25_scores = self.bm25.get_scores(tokenized_query)
 
-                    # If BM25 score is very low, penalize heavily.
-                    # If it's high, it mitigates the penalty.
-                    if bm25_score < 0.1:
-                        sparse_modifier = -0.5  # Heavy penalty
+            for idx, candidate in enumerate(candidates):
+                distance = results['distances'][0][idx]
+                dense_score = 1.0 / (1.0 + distance)
+
+                sparse_modifier = 0.0
+                if prep_filter and bm25_scores is not None:
+                    cand_str = f"{candidate['name']} {candidate['preparation']}".lower()
+                    corpus_idx = self.corpus_index_map.get(cand_str)
+                    if corpus_idx is not None:
+                        bm25_score = bm25_scores[corpus_idx]
+                        if bm25_score < 0.1:
+                            sparse_modifier = -0.5
+                        else:
+                            sparse_modifier = 0.1 * bm25_score
                     else:
-                        sparse_modifier = 0.1 * bm25_score # Small reward
-                else:
-                    sparse_modifier = -0.5 # Penalty if not found somehow
+                        sparse_modifier = -0.5
 
-            final_score = dense_score + sparse_modifier
+                final_score = dense_score + sparse_modifier
 
-            if final_score > best_score:
-                best_score = final_score
-                best_candidate = candidate
+                if final_score > best_score:
+                    best_score = final_score
+                    best_candidate = candidate
 
-        if best_candidate:
-            return NutritionRecord(**best_candidate)
+            if best_candidate:
+                duration = (time.time() - start_time) * 1000
+                logger.info(f"Nutrition Engine: Match found for '{query}': {best_candidate['name']} (Score: {best_score:.4f}, Duration: {duration:.2f}ms)")
+                return NutritionRecord(**best_candidate)
 
-        return None
+            logger.warning(f"Nutrition Engine: No suitable candidate found for query '{query}' after hybrid scoring")
+            return None
+
+        except Exception as e:
+            logger.error(f"Nutrition Engine FAILURE: Search process failed: {str(e)}")
+            return None
 
 # Singleton instance
 engine = HybridSearchEngine()
+

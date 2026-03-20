@@ -351,3 +351,158 @@
 2026-03-19 23:15:32,802 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 8453.53ms)
 2026-03-19 23:45:50,165 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
 2026-03-19 23:45:52,718 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-20 00:14:22,865 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-20 00:14:26,451 - dietin_backend - INFO - [llm_router.py:27] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-20 00:15:08,879 - dietin_backend - INFO - [llm_router.py:26] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-20 00:15:12,671 - dietin_backend - INFO - [llm_router.py:26] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-20 00:15:25,152 - dietin_backend - INFO - [llm_router.py:26] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-20 00:15:29,305 - dietin_backend - INFO - [llm_router.py:26] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-20 00:16:27,759 - dietin_backend - INFO - [llm_router.py:26] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-20 00:16:31,233 - dietin_backend - INFO - [llm_router.py:26] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-20 00:19:34,136 - dietin_backend - INFO - [llm_router.py:26] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-20 00:32:45,288 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-20 00:32:45,301 - dietin_backend - INFO - [llm_router.py:89] - LLM Router: Requesting text generation using gemini provider.
+2026-03-20 00:32:47,880 - dietin_backend - INFO - [llm_router.py:103] - LLM Router: Text generation successful using gemini in 2579.57ms
+2026-03-20 00:32:47,881 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 2592.87ms)
+2026-03-20 00:33:00,244 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-20 00:33:00,246 - dietin_backend - INFO - [llm_router.py:89] - LLM Router: Requesting text generation using gemini provider.
+2026-03-20 00:33:02,642 - dietin_backend - INFO - [llm_router.py:103] - LLM Router: Text generation successful using gemini in 2396.05ms
+2026-03-20 00:33:02,642 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 2398.01ms)
+2026-03-20 00:35:52,683 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-20 00:35:52,687 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-20 00:35:52,687 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-20 00:35:52,688 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-20 00:35:52,690 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-20 00:35:52,694 - dietin_backend - INFO - [llm_router.py:89] - LLM Router: Requesting text generation using gemini provider.
+2026-03-20 00:35:52,700 - dietin_backend - INFO - [llm_router.py:89] - LLM Router: Requesting text generation using gemini provider.
+2026-03-20 00:35:52,703 - dietin_backend - INFO - [llm_router.py:89] - LLM Router: Requesting text generation using gemini provider.
+2026-03-20 00:35:52,705 - dietin_backend - INFO - [llm_router.py:89] - LLM Router: Requesting text generation using gemini provider.
+2026-03-20 00:35:52,708 - dietin_backend - INFO - [llm_router.py:89] - LLM Router: Requesting text generation using gemini provider.
+2026-03-20 00:35:54,250 - dietin_backend - INFO - [llm_router.py:103] - LLM Router: Text generation successful using gemini in 1556.06ms
+2026-03-20 00:35:54,251 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 1567.40ms)
+2026-03-20 00:35:54,586 - dietin_backend - INFO - [llm_router.py:103] - LLM Router: Text generation successful using gemini in 1880.87ms
+2026-03-20 00:35:54,587 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 1898.95ms)
+2026-03-20 00:35:54,644 - dietin_backend - INFO - [llm_router.py:103] - LLM Router: Text generation successful using gemini in 1941.48ms
+2026-03-20 00:35:54,645 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 1957.12ms)
+2026-03-20 00:35:54,761 - dietin_backend - INFO - [llm_router.py:103] - LLM Router: Text generation successful using gemini in 2061.15ms
+2026-03-20 00:35:54,761 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 2074.13ms)
+2026-03-20 00:35:55,249 - dietin_backend - INFO - [llm_router.py:103] - LLM Router: Text generation successful using gemini in 2541.72ms
+2026-03-20 00:35:55,250 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 2559.82ms)
+2026-03-20 00:41:49,596 - dietin_backend - INFO - [llm_router.py:26] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-20 00:41:53,175 - dietin_backend - INFO - [llm_router.py:26] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-20 00:42:15,665 - dietin_backend - INFO - [llm_router.py:26] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-20 00:42:19,135 - dietin_backend - INFO - [llm_router.py:26] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-20 00:43:31,841 - dietin_backend - INFO - [llm_router.py:26] - LLM Router: Using Google Gemini (gemini-3.1-flash-lite-preview) as provider.
+2026-03-20 00:43:31,900 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/analyze/image
+2026-03-20 00:43:31,902 - dietin_backend - INFO - [main.py:297] - Main API: Received image analysis request
+2026-03-20 00:43:31,902 - dietin_backend - DEBUG - [main.py:307] - Main API: Read 1411 bytes from upload
+2026-03-20 00:43:31,902 - dietin_backend - INFO - [main.py:320] - Main API: Dispatching Vision Engine and LLM Router tasks...
+2026-03-20 00:43:31,902 - dietin_backend - DEBUG - [vision_engine.py:53] - Vision Engine: Starting volume estimation for 1411 bytes of image data
+2026-03-20 00:43:31,927 - dietin_backend - INFO - [vision_engine.py:33] - Vision Engine: Loading Depth-Anything-Small-HF on mps...
+2026-03-20 00:44:22,650 - dietin_backend - INFO - [vision_engine.py:39] - Vision Engine: Model initialized successfully in 50747.10ms on mps
+2026-03-20 00:44:22,653 - dietin_backend - DEBUG - [vision_engine.py:65] - Vision Engine: Image decoded. Size: 224x224
+2026-03-20 00:44:22,654 - dietin_backend - DEBUG - [vision_engine.py:72] - Vision Engine: Running depth estimation inference...
+2026-03-20 00:44:23,617 - dietin_backend - DEBUG - [vision_engine.py:88] - Vision Engine: Depth map generated. Raw range: [4.63, 10.15]
+2026-03-20 00:44:23,623 - dietin_backend - DEBUG - [vision_engine.py:142] - Vision Engine: Object detected. Pixels: 48106, Volume: 16750.30cm3
+2026-03-20 00:44:23,623 - dietin_backend - INFO - [vision_engine.py:150] - Vision Engine: Volume estimation completed: 16750.30cm3 in 51720.90ms
+2026-03-20 00:44:23,624 - dietin_backend - INFO - [main.py:326] - Main API: Async tasks completed. Volume: 16750.30cm3, Food: Chicken
+2026-03-20 00:44:23,624 - dietin_backend - DEBUG - [main.py:338] - Main API: Searching nutrition database for 'Chicken' (prep: fried)
+2026-03-20 00:44:23,624 - dietin_backend - DEBUG - [nutrition_engine.py:104] - Nutrition Engine: Starting search for 'Chicken' (Prep Filter: fried)
+2026-03-20 00:44:23,624 - dietin_backend - INFO - [nutrition_engine.py:53] - Nutrition Engine: Initializing Hybrid Search Engine at ./chroma_db
+2026-03-20 00:44:25,600 - dietin_backend - INFO - [nutrition_engine.py:59] - Nutrition Engine: Loading SentenceTransformer model (all-MiniLM-L6-v2) on CPU...
+2026-03-20 00:44:30,839 - dietin_backend - INFO - [nutrition_engine.py:79] - Nutrition Engine: Seeding database with 15 mock records...
+2026-03-20 00:44:31,001 - dietin_backend - INFO - [nutrition_engine.py:94] - Nutrition Engine: Successfully seeded 15 records.
+2026-03-20 00:44:31,001 - dietin_backend - INFO - [nutrition_engine.py:73] - Nutrition Engine: Initialized successfully in 7376.97ms
+2026-03-20 00:44:31,008 - dietin_backend - DEBUG - [nutrition_engine.py:125] - Nutrition Engine: Found 10 dense candidates
+2026-03-20 00:44:31,009 - dietin_backend - INFO - [nutrition_engine.py:161] - Nutrition Engine: Match found for 'Chicken': Fried Chicken (Score: 0.8273, Duration: 7384.71ms)
+2026-03-20 00:44:31,009 - dietin_backend - INFO - [main.py:347] - Main API: Database match found: Fried Chicken
+2026-03-20 00:44:31,009 - dietin_backend - DEBUG - [main.py:359] - Main API: Calculated mass: 10678.32g (Density: 0.85, Yield: 0.75)
+2026-03-20 00:44:31,009 - dietin_backend - INFO - [main.py:383] - Main API: Analysis complete for 'Fried Chicken' in 59107.27ms
+2026-03-20 00:44:31,012 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/analyze/image - Status: 200 (Duration: 59112.49ms)
+2026-03-20 00:44:31,020 - dietin_backend - INFO - [main.py:23] - Incoming GET request to /health
+2026-03-20 00:44:31,021 - dietin_backend - INFO - [main.py:31] - Completed GET /health - Status: 200 (Duration: 1.02ms)
+2026-03-20 00:44:31,073 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/analyze/label
+2026-03-20 00:44:31,077 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/analyze/label - Status: 200 (Duration: 3.33ms)
+2026-03-20 00:44:31,079 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/analyze/speech
+2026-03-20 00:44:36,231 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/analyze/speech - Status: 500 (Duration: 5152.45ms)
+2026-03-20 00:44:36,239 - dietin_backend - DEBUG - [nutrition_engine.py:104] - Nutrition Engine: Starting search for 'Spicy crispy chicken' (Prep Filter: fried)
+2026-03-20 00:44:36,260 - dietin_backend - DEBUG - [nutrition_engine.py:125] - Nutrition Engine: Found 10 dense candidates
+2026-03-20 00:44:36,261 - dietin_backend - INFO - [nutrition_engine.py:161] - Nutrition Engine: Match found for 'Spicy crispy chicken': Fried Chicken (Score: 0.7935, Duration: 21.15ms)
+2026-03-20 00:44:36,261 - dietin_backend - DEBUG - [nutrition_engine.py:104] - Nutrition Engine: Starting search for 'chicken' (Prep Filter: raw)
+2026-03-20 00:44:36,265 - dietin_backend - DEBUG - [nutrition_engine.py:125] - Nutrition Engine: Found 10 dense candidates
+2026-03-20 00:44:36,266 - dietin_backend - INFO - [nutrition_engine.py:161] - Nutrition Engine: Match found for 'chicken': Raw Chicken Breast (Score: 0.6180, Duration: 4.86ms)
+2026-03-20 00:44:36,266 - dietin_backend - DEBUG - [nutrition_engine.py:104] - Nutrition Engine: Starting search for 'Pizza Slice' (Prep Filter: baked)
+2026-03-20 00:44:36,282 - dietin_backend - DEBUG - [nutrition_engine.py:125] - Nutrition Engine: Found 10 dense candidates
+2026-03-20 00:44:36,282 - dietin_backend - INFO - [nutrition_engine.py:161] - Nutrition Engine: Match found for 'Pizza Slice': Pizza (Score: 0.8030, Duration: 16.44ms)
+2026-03-20 00:44:36,282 - dietin_backend - DEBUG - [nutrition_engine.py:104] - Nutrition Engine: Starting search for 'A glass of cold whole milk' (Prep Filter: liquid)
+2026-03-20 00:44:36,299 - dietin_backend - DEBUG - [nutrition_engine.py:125] - Nutrition Engine: Found 10 dense candidates
+2026-03-20 00:44:36,299 - dietin_backend - INFO - [nutrition_engine.py:161] - Nutrition Engine: Match found for 'A glass of cold whole milk': Whole Milk (Score: 0.8404, Duration: 17.17ms)
+2026-03-20 00:44:36,300 - dietin_backend - DEBUG - [vision_engine.py:161] - Vision Engine: MobileSAM stub called
+2026-03-20 00:44:36,307 - dietin_backend - DEBUG - [vision_engine.py:53] - Vision Engine: Starting volume estimation for 1411 bytes of image data
+2026-03-20 00:44:36,307 - dietin_backend - DEBUG - [vision_engine.py:65] - Vision Engine: Image decoded. Size: 224x224
+2026-03-20 00:44:36,307 - dietin_backend - DEBUG - [vision_engine.py:72] - Vision Engine: Running depth estimation inference...
+2026-03-20 00:44:36,320 - dietin_backend - DEBUG - [vision_engine.py:88] - Vision Engine: Depth map generated. Raw range: [1.00, 1.00]
+2026-03-20 00:44:36,320 - dietin_backend - WARNING - [vision_engine.py:107] - Vision Engine: Flat depth map detected (max == min)
+2026-03-20 00:44:36,320 - dietin_backend - WARNING - [vision_engine.py:138] - Vision Engine: No object detected (protrusion < 1cm across all pixels)
+2026-03-20 00:44:36,320 - dietin_backend - INFO - [vision_engine.py:150] - Vision Engine: Volume estimation completed: 250.00cm3 in 13.58ms
+2026-03-20 00:44:36,321 - dietin_backend - DEBUG - [vision_engine.py:53] - Vision Engine: Starting volume estimation for 12 bytes of image data
+2026-03-20 00:44:38,649 - dietin_backend - ERROR - [vision_engine.py:67] - Vision Engine FAILURE: Failed to decode image: cannot identify image file <_io.BytesIO object at 0x148c35f40>
+2026-03-20 00:44:57,615 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/analyze/text
+2026-03-20 00:44:57,622 - dietin_backend - INFO - [main.py:222] - Main API: Received text analysis request
+2026-03-20 00:44:57,622 - dietin_backend - INFO - [llm_router.py:90] - LLM Router: Requesting text classification using gemini provider.
+2026-03-20 00:44:57,622 - dietin_backend - INFO - [llm_router.py:119] - LLM Router: Requesting text generation using gemini provider.
+2026-03-20 00:44:59,276 - dietin_backend - INFO - [llm_router.py:133] - LLM Router: Text generation successful using gemini in 1653.60ms
+2026-03-20 00:44:59,276 - dietin_backend - INFO - [llm_router.py:107] - LLM Router: Text classification successful using gemini in 1654.11ms
+2026-03-20 00:44:59,277 - dietin_backend - INFO - [main.py:230] - Main API: Text classification extracted: {'foodName': 'chicken', 'prep': 'fried', 'mass_g': 200.0}
+2026-03-20 00:44:59,277 - dietin_backend - DEBUG - [nutrition_engine.py:104] - Nutrition Engine: Starting search for 'chicken' (Prep Filter: fried)
+2026-03-20 00:44:59,277 - dietin_backend - INFO - [nutrition_engine.py:53] - Nutrition Engine: Initializing Hybrid Search Engine at ./chroma_db
+2026-03-20 00:44:59,397 - dietin_backend - INFO - [nutrition_engine.py:59] - Nutrition Engine: Loading SentenceTransformer model (all-MiniLM-L6-v2) on CPU...
+2026-03-20 00:45:08,759 - dietin_backend - INFO - [nutrition_engine.py:73] - Nutrition Engine: Initialized successfully in 9481.71ms
+2026-03-20 00:45:08,894 - dietin_backend - DEBUG - [nutrition_engine.py:125] - Nutrition Engine: Found 10 dense candidates
+2026-03-20 00:45:08,895 - dietin_backend - INFO - [nutrition_engine.py:161] - Nutrition Engine: Match found for 'chicken': Fried Chicken (Score: 0.8273, Duration: 9618.11ms)
+2026-03-20 00:45:08,895 - dietin_backend - INFO - [main.py:248] - Main API: Database match found: Fried Chicken
+2026-03-20 00:45:08,895 - dietin_backend - INFO - [main.py:270] - Main API: Text analysis complete for 'Fried Chicken' in 11272.91ms
+2026-03-20 00:45:08,898 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/analyze/text - Status: 200 (Duration: 11282.54ms)
+2026-03-20 00:45:08,898 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/analyze/text
+2026-03-20 00:45:08,898 - dietin_backend - INFO - [main.py:222] - Main API: Received text analysis request
+2026-03-20 00:45:08,898 - dietin_backend - INFO - [llm_router.py:90] - LLM Router: Requesting text classification using gemini provider.
+2026-03-20 00:45:08,898 - dietin_backend - INFO - [llm_router.py:119] - LLM Router: Requesting text generation using gemini provider.
+2026-03-20 00:45:09,990 - dietin_backend - INFO - [llm_router.py:133] - LLM Router: Text generation successful using gemini in 1091.70ms
+2026-03-20 00:45:09,990 - dietin_backend - INFO - [llm_router.py:107] - LLM Router: Text classification successful using gemini in 1091.89ms
+2026-03-20 00:45:09,990 - dietin_backend - INFO - [main.py:230] - Main API: Text classification extracted: {'foodName': 'banana', 'prep': 'raw', 'mass_g': 118.0}
+2026-03-20 00:45:09,990 - dietin_backend - DEBUG - [nutrition_engine.py:104] - Nutrition Engine: Starting search for 'banana' (Prep Filter: raw)
+2026-03-20 00:45:09,997 - dietin_backend - DEBUG - [nutrition_engine.py:125] - Nutrition Engine: Found 10 dense candidates
+2026-03-20 00:45:09,998 - dietin_backend - INFO - [nutrition_engine.py:161] - Nutrition Engine: Match found for 'banana': Banana (Score: 0.7786, Duration: 7.45ms)
+2026-03-20 00:45:09,998 - dietin_backend - INFO - [main.py:248] - Main API: Database match found: Banana
+2026-03-20 00:45:09,998 - dietin_backend - INFO - [main.py:270] - Main API: Text analysis complete for 'Banana' in 1099.63ms
+2026-03-20 00:45:09,998 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/analyze/text - Status: 200 (Duration: 1100.21ms)
+2026-03-20 00:45:10,001 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/analyze/text
+2026-03-20 00:45:10,001 - dietin_backend - INFO - [main.py:222] - Main API: Received text analysis request
+2026-03-20 00:45:10,001 - dietin_backend - INFO - [llm_router.py:90] - LLM Router: Requesting text classification using gemini provider.
+2026-03-20 00:45:10,001 - dietin_backend - INFO - [llm_router.py:119] - LLM Router: Requesting text generation using gemini provider.
+2026-03-20 00:45:11,271 - dietin_backend - INFO - [llm_router.py:133] - LLM Router: Text generation successful using gemini in 1269.77ms
+2026-03-20 00:45:11,271 - dietin_backend - INFO - [llm_router.py:107] - LLM Router: Text classification successful using gemini in 1270.07ms
+2026-03-20 00:45:11,271 - dietin_backend - INFO - [main.py:230] - Main API: Text classification extracted: {'foodName': 'white rice and scrambled eggs', 'prep': 'boiled and scrambled', 'mass_g': 250.0}
+2026-03-20 00:45:11,272 - dietin_backend - DEBUG - [nutrition_engine.py:104] - Nutrition Engine: Starting search for 'white rice and scrambled eggs' (Prep Filter: boiled and scrambled)
+2026-03-20 00:45:11,283 - dietin_backend - DEBUG - [nutrition_engine.py:125] - Nutrition Engine: Found 10 dense candidates
+2026-03-20 00:45:11,283 - dietin_backend - INFO - [nutrition_engine.py:161] - Nutrition Engine: Match found for 'white rice and scrambled eggs': Scrambled Eggs (Score: 0.8185, Duration: 11.30ms)
+2026-03-20 00:45:11,283 - dietin_backend - INFO - [main.py:248] - Main API: Database match found: Scrambled Eggs
+2026-03-20 00:45:11,283 - dietin_backend - INFO - [main.py:270] - Main API: Text analysis complete for 'Scrambled Eggs' in 1281.79ms
+2026-03-20 00:45:11,283 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/analyze/text - Status: 200 (Duration: 1282.52ms)
+2026-03-20 00:45:11,287 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/analyze/text
+2026-03-20 00:45:11,287 - dietin_backend - INFO - [main.py:222] - Main API: Received text analysis request
+2026-03-20 00:45:11,287 - dietin_backend - INFO - [llm_router.py:90] - LLM Router: Requesting text classification using gemini provider.
+2026-03-20 00:45:11,287 - dietin_backend - INFO - [llm_router.py:119] - LLM Router: Requesting text generation using gemini provider.
+2026-03-20 00:45:12,902 - dietin_backend - INFO - [llm_router.py:133] - LLM Router: Text generation successful using gemini in 1615.01ms
+2026-03-20 00:45:12,903 - dietin_backend - INFO - [llm_router.py:107] - LLM Router: Text classification successful using gemini in 1615.58ms
+2026-03-20 00:45:12,903 - dietin_backend - INFO - [main.py:230] - Main API: Text classification extracted: {'foodName': 'salmon', 'prep': 'unknown', 'mass_g': 100.0}
+2026-03-20 00:45:12,903 - dietin_backend - DEBUG - [nutrition_engine.py:104] - Nutrition Engine: Starting search for 'salmon' (Prep Filter: unknown)
+2026-03-20 00:45:12,921 - dietin_backend - DEBUG - [nutrition_engine.py:125] - Nutrition Engine: Found 10 dense candidates
+2026-03-20 00:45:12,922 - dietin_backend - INFO - [nutrition_engine.py:161] - Nutrition Engine: Match found for 'salmon': Salmon (Score: 0.2326, Duration: 18.52ms)
+2026-03-20 00:45:12,922 - dietin_backend - INFO - [main.py:248] - Main API: Database match found: Salmon
+2026-03-20 00:45:12,922 - dietin_backend - INFO - [main.py:270] - Main API: Text analysis complete for 'Salmon' in 1634.71ms
+2026-03-20 00:45:12,922 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/analyze/text - Status: 200 (Duration: 1635.53ms)
+2026-03-20 00:46:03,029 - dietin_backend - INFO - [main.py:23] - Incoming POST request to /api/v1/proxy/generate
+2026-03-20 00:46:03,034 - dietin_backend - INFO - [llm_router.py:119] - LLM Router: Requesting text generation using gemini provider.
+2026-03-20 00:46:12,001 - dietin_backend - INFO - [llm_router.py:133] - LLM Router: Text generation successful using gemini in 8966.89ms
+2026-03-20 00:46:12,003 - dietin_backend - INFO - [main.py:31] - Completed POST /api/v1/proxy/generate - Status: 200 (Duration: 8974.99ms)

@@ -208,7 +208,81 @@ async def proxy_generate(request: ProxyRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+class AnalyzerTextRequest(BaseModel):
+    text: str
+
+@app.post("/api/v1/analyze/text", response_model=AnalysisResponse)
+async def analyze_text(request: AnalyzerTextRequest):
+    """
+    Phase 4+: Text Analysis Endpoint
+    Executes LLM Classification (API) to extract food details, 
+    then uses deterministic physics (Nutrition Engine) for exact macros.
+    """
+    start_time = time.time()
+    logger.info("Main API: Received text analysis request")
+
+    if not request.text or len(request.text.strip()) == 0:
+        raise HTTPException(status_code=400, detail="Text description is required")
+
+    try:
+        # LLM extracts { foodName, prep, mass_g }
+        llm_classification = await llm_router.get_text_classification(request.text)
+        logger.info(f"Main API: Text classification extracted: {llm_classification}")
+    except Exception as e:
+        logger.exception("Main API FAILURE: LLM router failed for text analysis")
+        raise HTTPException(status_code=500, detail=f"LLM extraction error: {str(e)}")
+
+    food_name = llm_classification.get("foodName", request.text)
+    prep = llm_classification.get("prep", "")
+    mass_g = float(llm_classification.get("mass_g", 100.0))
+    warnings = []
+
+    # Semantic Database Lookup
+    try:
+        db_record = nutrition_engine.search(query=food_name, prep_filter=prep)
+    except Exception as e:
+        logger.exception("Main API FAILURE: Nutrition database search failed")
+        db_record = None
+
+    if db_record:
+        logger.info(f"Main API: Database match found: {db_record.name}")
+        multiplier = mass_g / 100.0
+        final_calories = int(db_record.calories_per_100g * multiplier)
+        final_protein = round(db_record.protein_per_100g * multiplier, 1)
+        final_carbs = round(db_record.carbs_per_100g * multiplier, 1)
+        final_fat = round(db_record.fat_per_100g * multiplier, 1)
+        resolved_food_name = db_record.name
+        
+        # Check liquid heuristic
+        if db_record.is_liquid:
+            warnings.append("Liquid detected. Macros based on entered/estimated mass.")
+    else:
+        logger.warning(f"Main API: No database match for '{food_name}'. Using generic fallback.")
+        warnings.append("Semantic mapping failed: Falling back to generic constants.")
+        multiplier = mass_g / 100.0
+        final_calories = int(150 * multiplier)
+        final_protein = round(5.0 * multiplier, 1)
+        final_carbs = round(20.0 * multiplier, 1)
+        final_fat = round(5.0 * multiplier, 1)
+        resolved_food_name = food_name
+
+    duration = (time.time() - start_time) * 1000
+    logger.info(f"Main API: Text analysis complete for '{resolved_food_name}' in {duration:.2f}ms")
+
+    return AnalysisResponse(
+        success=True,
+        data=NutritionData(
+            foodName=resolved_food_name,
+            calories=final_calories,
+            macros=Macros(protein=final_protein, carbs=final_carbs, fat=final_fat),
+            healthScore=85.0,
+            confidenceScore=0.9, # High confidence as it's directly typed
+            warnings=warnings
+        )
+    )
+
 @app.post("/api/v1/analyze/image", response_model=AnalysisResponse)
+
 async def analyze_image(
     full_image: UploadFile = File(None),
     context_image: UploadFile = File(None),
@@ -219,25 +293,40 @@ async def analyze_image(
     Executes Vision Engine (local) and LLM Classification (API) concurrently.
     Merges deterministic volume and USDA density to calculate exact macros.
     """
+    start_time = time.time()
+    logger.info("Main API: Received image analysis request")
+
     if not full_image and not crops:
+        logger.warning("Main API: No image provided in request")
         raise HTTPException(status_code=400, detail="No image provided")
 
     # Read image bytes
     if full_image:
-        image_bytes = await full_image.read()
+        try:
+            image_bytes = await full_image.read()
+            logger.debug(f"Main API: Read {len(image_bytes)} bytes from upload")
+        except Exception as e:
+            logger.exception("Main API FAILURE: Failed to read uploaded file")
+            raise HTTPException(status_code=500, detail=f"Failed to read image: {str(e)}")
 
         # Convert to base64 for LLM
-        base64_image = base64.b64encode(image_bytes).decode("utf-8")
+        try:
+            base64_image = base64.b64encode(image_bytes).decode("utf-8")
+        except Exception as e:
+            logger.exception("Main API FAILURE: Failed to encode image to base64")
+            raise HTTPException(status_code=500, detail="Failed to process image data")
 
         # 1. Pattern A: The Async Race (asyncio.gather)
-        # Execute heavy local vision model and external LLM call concurrently
+        logger.info("Main API: Dispatching Vision Engine and LLM Router tasks...")
         vision_task = asyncio.to_thread(vision_engine.estimate_volume, image_bytes)
         gpt_task = llm_router.get_classification(base64_image)
 
         try:
             volume_cm3, llm_classification = await asyncio.gather(vision_task, gpt_task)
+            logger.info(f"Main API: Async tasks completed. Volume: {volume_cm3:.2f}cm3, Food: {llm_classification.get('foodName')}")
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Pipeline error: {str(e)}")
+            logger.exception("Main API FAILURE: Pipeline async tasks failed")
+            raise HTTPException(status_code=500, detail=f"Analysis pipeline error: {str(e)}")
 
         food_name = llm_classification.get("foodName", "Unknown Food")
         prep = llm_classification.get("prep", "")
@@ -245,39 +334,41 @@ async def analyze_image(
         class_confidence = llm_classification.get("confidence", 0.5)
 
         # 2. Semantic Database Lookup (Deterministic Physics)
-        # We query ChromaDB based on the LLM string classification to get exact density constants.
-        db_record = nutrition_engine.search(query=food_name, prep_filter=prep)
+        try:
+            logger.debug(f"Main API: Searching nutrition database for '{food_name}' (prep: {prep})")
+            db_record = nutrition_engine.search(query=food_name, prep_filter=prep)
+        except Exception as e:
+            logger.exception(f"Main API FAILURE: Nutrition database search failed for '{food_name}'")
+            db_record = None
 
         warnings = []
 
         if db_record:
+            logger.info(f"Main API: Database match found: {db_record.name}")
             density = db_record.density_g_cm3
             yield_factor = db_record.yield_factor
 
             # Pattern B: The Liquid Fork (Soup Problem)
             if is_liquid or db_record.is_liquid:
+                logger.info("Main API: Liquid detected. Applying container fill heuristic.")
                 warnings.append("Liquid detected: Container Fill Heuristic applied (Depth map overridden).")
-                # Fallback heuristic for liquids
-                volume_cm3 = 250.0  # 1 cup default for liquids if depth fails
+                volume_cm3 = 250.0  # 1 cup default for liquids
                 mass_g = volume_cm3 * density
             else:
-                # Standard Deterministic Math: Mass = Volume * Density * Yield Factor
                 mass_g = volume_cm3 * density * yield_factor
+                logger.debug(f"Main API: Calculated mass: {mass_g:.2f}g (Density: {density}, Yield: {yield_factor})")
 
-            # Calculate final macros based on mass (record stores per 100g)
+            # Calculate final macros
             multiplier = mass_g / 100.0
-
             final_calories = int(db_record.calories_per_100g * multiplier)
             final_protein = round(db_record.protein_per_100g * multiplier, 1)
             final_carbs = round(db_record.carbs_per_100g * multiplier, 1)
             final_fat = round(db_record.fat_per_100g * multiplier, 1)
-
             resolved_food_name = db_record.name
-
         else:
-            # Fallback if ChromaDB lookup fails
+            logger.warning(f"Main API: No database match for '{food_name}'. Using generic fallback.")
             warnings.append("Semantic mapping failed: Falling back to generic constants.")
-            mass_g = volume_cm3 * 1.0  # Assumed water density
+            mass_g = volume_cm3 * 1.0
             multiplier = mass_g / 100.0
             final_calories = int(150 * multiplier)
             final_protein = round(5.0 * multiplier, 1)
@@ -285,10 +376,11 @@ async def analyze_image(
             final_fat = round(5.0 * multiplier, 1)
             resolved_food_name = food_name
 
-        # Confidence Gating — keep score in 0–1 range to match frontend contract
-        composite_score = class_confidence
-        if composite_score < 0.7:
-            warnings.append(f"Low confidence ({composite_score * 100:.1f}%): Values may be inaccurate.")
+        if class_confidence < 0.7:
+            warnings.append(f"Low confidence ({class_confidence * 100:.1f}%): Values may be inaccurate.")
+
+        duration = (time.time() - start_time) * 1000
+        logger.info(f"Main API: Analysis complete for '{resolved_food_name}' in {duration:.2f}ms")
 
         return AnalysisResponse(
             success=True,
@@ -296,12 +388,13 @@ async def analyze_image(
                 foodName=resolved_food_name,
                 calories=final_calories,
                 macros=Macros(protein=final_protein, carbs=final_carbs, fat=final_fat),
-                healthScore=85.0, # Static or derived in future
-                confidenceScore=composite_score,
+                healthScore=85.0,
+                confidenceScore=class_confidence,
                 warnings=warnings
             )
         )
 
     else:
-        # crops-only path is not yet implemented
+        logger.warning("Main API: Crops-only analysis requested but not implemented")
         raise HTTPException(status_code=400, detail="Crop-based analysis is not yet supported. Please provide a full_image.")
+

@@ -313,54 +313,47 @@ Example responses:
       };
     }
 
-    // If it is food, proceed with nutrition analysis
-    const prompt = `Please analyze the nutrition facts of this food/meal:
-    Calories, Protein, Carbs, Fat, Health Score (Health score based on healthiness of the food preciesly between 0 and 100, eg, 32,52, 56, 78, 90, 100)
-The Meal description is: "${foodDescription}"
-Return ONLY a JSON object in this exact format (no explanation, no other text):
-{
-  "calories": number,
-  "protein": number,
-  "carbs": number,
-  "fat": number,
-  "healthScore": number
-}`;
-
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-
-    // MHMZ: Robust JSON extraction using regex to avoid conversational text failures
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    const cleanedText = jsonMatch ? jsonMatch[0] : text;
-
+    // MHMZ: Rerouted to local FastAPI for deterministic math (text tracking refactor)
     try {
-      const parsed = JSON.parse(cleanedText);
+      const response = await fetch("http://localhost:8000/api/v1/analyze/text", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: foodDescription })
+      });
 
-      // Validate the parsed data
-      if (!parsed || typeof parsed !== 'object') {
-        throw new Error('Invalid response format');
+      if (!response.ok) {
+        throw new Error(`Text API error: ${response.status}`);
       }
 
-      // Convert to numbers with precise decimals
-      const validatedData = {
-        calories: Math.max(0, Number(parsed.calories) || 0),
-        protein: Math.max(0, Number(Number(parsed.protein).toFixed(1)) || 0),
-        carbs: Math.max(0, Number(Number(parsed.carbs).toFixed(1)) || 0),
-        fat: Math.max(0, Number(Number(parsed.fat).toFixed(1)) || 0),
-        healthScore: Math.min(100, Math.max(0, Number(Number(parsed.healthScore).toFixed(1)) || 0))
-      };
+      const resData = await response.json();
+      if (!resData.success || !resData.data) {
+        throw new Error("Invalid format from backend text analysis.");
+      }
 
-      return validatedData;
+      const backendData = resData.data;
+
+      // Handle warnings
+      if (backendData.warnings && backendData.warnings.length > 0) {
+          console.warn("Backend Warnings:", backendData.warnings);
+      }
+      
+      return {
+        calories: backendData.calories || 0,
+        protein: backendData.macros?.protein || 0,
+        carbs: backendData.macros?.carbs || 0,
+        fat: backendData.macros?.fat || 0,
+        healthScore: backendData.healthScore || 85,
+        warning: backendData.warnings && backendData.warnings.length > 0 ? backendData.warnings[0] : undefined
+      };
     } catch (error) {
-      console.error("Failed to parse nutrition data:", error, "Raw text:", text);
+      console.error("Failed to parse nutrition data from deterministic backend:", error);
       return {
         calories: 0,
         protein: 0,
         carbs: 0,
         fat: 0,
         healthScore: 0,
-        warning: "Failed to analyze food"
+        warning: "Failed to analyze food securely"
       };
     }
   } catch (error) {
@@ -440,32 +433,32 @@ export async function analyzeImage(file: File): Promise<any> {
 }
 
 export async function analyzeFood(description: string) {
+  // MHMZ: Rerouted to local FastAPI for deterministic math
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
+    const response = await fetch("http://localhost:8000/api/v1/analyze/text", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: description })
+    });
 
-    const prompt = `Analyze this food: "${description}"`;
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-
-    try {
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      const cleanedText = jsonMatch ? jsonMatch[0] : text;
-      const parsed = JSON.parse(cleanedText);
-      
-      // MHMZ: Adding defensive mapping for different response structures
-      const nutrition = parsed.nutrition || parsed;
-      return {
-        calories: nutrition.calories || 0,
-        protein: nutrition.protein || 0,
-        carbs: nutrition.carbs || 0,
-        fat: nutrition.fat || 0,
-        healthScore: Math.round(parsed.healthScore || nutrition.healthScore || 85)
-      };
-    } catch (error) {
-      console.error("Failed to parse nutrition data [analyzeFood]:", error, "Raw:", text);
+    if (!response.ok) {
       return null;
     }
+
+    const resData = await response.json();
+    if (!resData.success || !resData.data) {
+      return null;
+    }
+
+    const backendData = resData.data;
+    
+    return {
+      calories: backendData.calories || 0,
+      protein: backendData.macros?.protein || 0,
+      carbs: backendData.macros?.carbs || 0,
+      fat: backendData.macros?.fat || 0,
+      healthScore: backendData.healthScore || 85,
+    };
   } catch (error) {
     console.error("Error analyzing food:", error);
     return null;
